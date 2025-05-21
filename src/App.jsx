@@ -1,19 +1,24 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 
-//import Home from './pages/Home';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 import Login from './pages/Login';
 //import Signup from './pages/Signup';
 import Characters from './pages/Characters';
+import Items from './pages/Items';
+
 //import Items from './pages/Items';
 
 function App() {
   return (
     <div className="App">
+      <Navbar />
       <Routes>
-
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home />} />
         <Route path="/characters" element={<Characters />} />
+        <Route path="/items" element={<Items />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );
