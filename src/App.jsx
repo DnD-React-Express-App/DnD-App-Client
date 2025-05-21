@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Characters from './pages/Characters';
 import Items from './pages/Items';
+import Profile from './pages/Profile';
 
 //import Items from './pages/Items';
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/items" element={<Items />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );
