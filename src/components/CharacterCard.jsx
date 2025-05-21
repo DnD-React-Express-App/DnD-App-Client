@@ -1,12 +1,26 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { deleteCharacter } from '../services/character.service';
 import '../CharacterCard.css';
 
-const CharacterCard = ({ character }) => {
+const CharacterCard = ({ character, onDelete }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/characters/${character._id}`);
+  };
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this character?')) {
+      try {
+        await deleteCharacter(character._id);
+        if (onDelete) onDelete(character._id);
+      } catch (err) {
+        console.error('Error deleting character:', err);
+        alert('Failed to delete character.');
+      }
+    }
   };
 
   return (
@@ -16,6 +30,9 @@ const CharacterCard = ({ character }) => {
       <p><strong>Level:</strong> {character.level}</p>
       <p><strong>Class:</strong> {character.classes.map(c => `${c.name} ${c.level}`).join(', ')}</p>
       <p><strong>STR:</strong> {character.stats.strength}</p>
+      {onDelete && (
+        <button onClick={handleDelete}>Delete</button>
+      )}
     </div>
   );
 };

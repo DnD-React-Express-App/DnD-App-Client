@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { deleteCharacter } from '../services/character.service';
 import axios from 'axios';
 
 const CharacterDetail = () => {
@@ -27,6 +28,18 @@ const CharacterDetail = () => {
     fetchCharacter();
   }, [id]);
 
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this character?')) {
+      try {
+        await deleteCharacter(id);
+        navigate('/characters');
+      } catch (err) {
+        console.error('Error deleting character:', err);
+        alert('Failed to delete character.');
+      }
+    }
+  };
+
   if (loading) return <p>Loading character...</p>;
   if (!character) return <p>Character not found</p>;
 
@@ -53,6 +66,8 @@ const CharacterDetail = () => {
 
       <h2>Backstory</h2>
       <p>{character.backstory || <em>No backstory provided</em>}</p>
+
+      <button onClick={handleDelete}>Delete Character</button>
     </div>
   );
 };

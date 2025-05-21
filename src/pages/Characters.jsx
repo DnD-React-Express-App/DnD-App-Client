@@ -40,7 +40,12 @@ function Characters() {
       {showForm ? (
         <CharacterForm onSuccess={handleSuccess} />
       ) : (
-        <CharacterList characters={characters} />
+        <CharacterList
+          characters={characters}
+          onDelete={(deletedId) =>
+            setCharacters((prev) => prev.filter((c) => c._id !== deletedId))
+          }
+        />
       )}
     </div>
   );

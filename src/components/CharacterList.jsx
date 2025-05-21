@@ -1,15 +1,15 @@
 import React from 'react';
 import CharacterCard from './CharacterCard';
 
-const CharacterList = ({ characters }) => {
+const CharacterList = ({ characters, onDelete }) => {
     if (!characters || characters.length === 0) {
         return <p>You don't have any characters yet.</p>;
     }
 
     return (
-        <div>
-            {characters.map((character) => (
-                <CharacterCard key={character._id} character={character} />
+        <div className="character-list">
+            {characters.map((char) => (
+                <CharacterCard key={char._id} character={char} onDelete={onDelete} />
             ))}
         </div>
     );
