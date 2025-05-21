@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const CharacterForm = ({ onSuccess }) => {
+const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [form, setForm] = useState({
         name: '',
         race: '',
@@ -15,8 +15,15 @@ const CharacterForm = ({ onSuccess }) => {
         },
         classes: [{ name: '', level: 1 }],
         level: 1,
-        backstory: ''
+        backstory: '',
+        ...initialData,
     });
+
+    useEffect(() => {
+    if (initialData && initialData._id) {
+      setForm({ ...form, ...initialData });
+    }
+  }, [initialData]);
 
     const classOptions = [
         'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
@@ -69,16 +76,23 @@ const CharacterForm = ({ onSuccess }) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('authToken');
-            const res = await axios.post('http://localhost:5005/api/characters', form, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            let res;
+            if (form._id) {
+                // Update existing
+                res = await axios.put(`http://localhost:5005/api/characters/${form._id}`, form, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            } else {
+                // Create new
+                res = await axios.post(`http://localhost:5005/api/characters`, form, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            }
             if (onSuccess) onSuccess(res.data);
-            alert('Character created!');
+            alert(`Character ${form._id ? 'updated' : 'created'}!`);
         } catch (err) {
             console.error(err);
-            alert('Error creating character');
+            alert(`Error ${form._id ? 'updating' : 'creating'} character`);
         }
     };
 
@@ -153,7 +167,7 @@ const CharacterForm = ({ onSuccess }) => {
                 placeholder="Backstory..."
             />
 
-            <button type="submit">Create Character</button>
+            <button type="submit">Save Character</button>
         </form>
     );
 };
