@@ -37,6 +37,9 @@ function ItemDetailsPage() {
         <>
             <ItemDetails item={item} />
             <button onClick={handleDelete} className="delete-button">Delete</button>
+            <Link to={`/items/${item._id}/edit`} className="edit-button">
+                Edit
+            </Link>
             <Link to="/items">Back</Link>
         </>
     )
