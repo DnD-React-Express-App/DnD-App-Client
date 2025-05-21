@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Characters from './pages/Characters';
 import Items from './pages/Items';
+import ItemDetailsPage from './pages/ItemDetailsPage';
 import CharacterCreate from './pages/CharacterCreate';
 import CreateItem from './pages/CreateItem';
 import Profile from './pages/Profile';
@@ -22,6 +23,7 @@ function App() {
         <Route path="/characters/create" element={<CharacterCreate />} />
         <Route path="/items" element={<Items />} />
         <Route path="/items/create" element={<CreateItem/>}/>
+        <Route path="/items/:id" element={<ItemDetailsPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
