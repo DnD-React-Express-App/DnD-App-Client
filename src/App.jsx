@@ -12,6 +12,7 @@ import Characters from './pages/Characters';
 import ItemDetailsPage from './pages/ItemDetailsPage';
 import CharacterCreate from './pages/CharacterCreate';
 import CharacterDetail from './pages/CharacterDetail';
+import EditCharacter from './pages/EditCharacter';
 
 import Items from './pages/Items';
 import CreateItem from './pages/CreateItem';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/characters" element={<Characters />} />
         <Route path="/characters/create" element={<CharacterCreate />} />
         <Route path="/characters/:id" element={<CharacterDetail />} />
+        <Route path="/characters/:id/edit" element={<EditCharacter />} />
         <Route path="/items" element={<Items />} />
         <Route path="/items/create" element={<CreateItem/>}/>
         <Route path="/items/:id" element={<ItemDetailsPage />} />
