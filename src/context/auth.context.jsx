@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { login, signup, verify } from "../services/auth.service";
 
 const AuthContext = React.createContext();
 
@@ -22,16 +20,14 @@ function AuthProviderWrapper(props) {
     const storedToken = localStorage.getItem("authToken");
 
     if (storedToken) {
-      axios
-        .get(`${API_URL}/auth/verify`, {
-          headers: { Authorization: `Bearer ${storedToken}` },
-        })
+      verify()
         .then((res) => {
           setIsLoggedIn(true);
           setIsLoading(false);
           setUser(res.data);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Auth verification failed:", err);
           setIsLoggedIn(false);
           setIsLoading(false);
           setUser(null);
