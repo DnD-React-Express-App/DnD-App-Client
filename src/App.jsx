@@ -8,9 +8,9 @@ import Signup from './pages/Signup';
 import Characters from './pages/Characters';
 import Items from './pages/Items';
 import CharacterCreate from './pages/CharacterCreate';
+import CreateItem from './pages/CreateItem';
 import Profile from './pages/Profile';
 
-//import Items from './pages/Items';
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
         <Route path="/characters" element={<Characters />} />
         <Route path="/characters/create" element={<CharacterCreate />} />
         <Route path="/items" element={<Items />} />
+        <Route path="/items/create" element={<CreateItem/>}/>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
@@ -31,10 +32,3 @@ function App() {
 
 export default App;
 
-/*
-<Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/characters" element={<Characters />} />
-        <Route path="/items" element={<Items />} />
-*/
