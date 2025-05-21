@@ -1,11 +1,14 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/auth.context';
 import { getCharacters } from '../services/character.service';
+import CharacterList from '../components/CharacterList';
+import CharacterForm from '../components/CharacterForm';
 
 function Characters() {
   const { isLoggedIn, user, isLoading } = useContext(AuthContext);
   const [characters, setCharacters] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     getCharacters()
@@ -16,6 +19,11 @@ function Characters() {
       });
   }, []);
 
+  const handleSuccess = (newCharacter) => {
+    setCharacters((prev) => [...prev, newCharacter]);
+    setShowForm(false);
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (!isLoggedIn) return <p>You must be logged in to view characters.</p>;
 
@@ -23,20 +31,16 @@ function Characters() {
     <div>
       <h2>{user?.name}'s Characters</h2>
 
+      <button onClick={() => setShowForm(!showForm)}>
+        {showForm ? 'Back to List' : 'Create New Character'}
+      </button>
+
       {errorMessage && <p className="error">{errorMessage}</p>}
 
-      {characters.length > 0 ? (
-        <ul>
-          {characters.map((char) => (
-            <li key={char._id}>
-              <strong>{char.name}</strong> — Level{' '}
-              {char.classes.reduce((acc, c) => acc + c.level, 0)}{' '}
-              ({char.classes.map((c) => `${c.level} ${c.name}`).join(', ')})
-            </li>
-          ))}
-        </ul>
+      {showForm ? (
+        <CharacterForm onSuccess={handleSuccess} />
       ) : (
-        <p>You don't have any characters yet.</p>
+        <CharacterList characters={characters} />
       )}
     </div>
   );

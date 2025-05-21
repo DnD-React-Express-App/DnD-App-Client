@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Characters from './pages/Characters';
 import Items from './pages/Items';
+import CharacterCreate from './pages/CharacterCreate';
 
 //import Items from './pages/Items';
 
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/characters" element={<Characters />} />
+        <Route path="/characters/create" element={<CharacterCreate />} />
         <Route path="/items" element={<Items />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
