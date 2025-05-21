@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/auth.context';
 import { getCharacters } from '../services/character.service';
+import { Link } from 'react-router-dom';
 
 function Items() {
   const { isLoggedIn, user, isLoading } = useContext(AuthContext);
@@ -22,6 +23,8 @@ function Items() {
   return (
     <div className="login-page">
       <h2>Welcome to the item page</h2>
+      <p>This page will eventually show a full list of items.</p>
+      <Link to="/items/create">Create a New Item</Link>
     </div>
   );
 }
