@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth.context';
 import { login, verify } from '../services/auth.service';
+import { NavLink } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -56,6 +57,8 @@ function Login() {
 
                 <button type="submit">Log In</button>
             </form>
+
+            <NavLink to="/signup"> Don't have an account? Sign Up here. </NavLink>
 
             {errorMessage && <p className="error">{errorMessage}</p>}
         </div>
