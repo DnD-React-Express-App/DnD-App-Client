@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { ItemContext } from '../context/item.context';
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
+    const { items, isLoading } = useContext(ItemContext);
+
     const [currentTab, setCurrentTab] = useState('Basics');
+
+    const [armorOptions, setArmorOptions] = useState([]);
+    const [weaponOptions, setWeaponOptions] = useState([]);
+    const [selectedArmor, setSelectedArmor] = useState(null);
+    const [selectedWeapon, setSelectedWeapon] = useState(null);
 
     const [form, setForm] = useState({
         name: '',
@@ -21,6 +29,13 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         backstory: '',
         ...initialData,
     });
+
+    useEffect(() => {
+        if (items.length > 0) {
+            setArmorOptions(items.filter(item => item.type === 'Armor'));
+            setWeaponOptions(items.filter(item => item.type === 'Weapon'));
+        }
+    }, [items]);
 
     useEffect(() => {
         if (initialData && initialData._id) {
@@ -201,6 +216,37 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                             placeholder="Backstory..."
                         />
                     </>
+                )}
+
+                {currentTab === "Equipment" && (
+                    <>
+                        <label>Select Armor:</label>
+                        <select
+                            value={selectedArmor}
+                            onChange={(e) => setSelectedArmor(e.target.value)}
+                        >
+                            <option value="">-- Select Armor --</option>
+                            {armorOptions.map(armor => (
+                                <option key={armor._id} value={armor._id}>
+                                    {armor.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <label>Select Weapon:</label>
+                        <select
+                            value={selectedWeapon}
+                            onChange={(e) => setSelectedWeapon(e.target.value)}
+                        >
+                            <option value="">-- Select Weapon --</option>
+                            {weaponOptions.map(weapon => (
+                                <option key={weapon._id} value={weapon._id}>
+                                    {weapon.name}
+                                </option>
+                            ))}
+                        </select>
+                    </>
+
                 )}
 
                 <button type="submit">Save Character</button>
