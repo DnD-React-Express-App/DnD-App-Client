@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { ItemContext } from '../context/item.context';
+import { createCharacter, updateCharacter } from '../services/character.service';
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
@@ -94,18 +95,19 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('authToken');
+    
+            const payload = {
+                ...form,
+                items: [selectedArmor, selectedWeapon].filter(Boolean),
+            };
+    
             let res;
             if (form._id) {
-                // Update existing
-                res = await axios.put(`http://localhost:5005/api/characters/${form._id}`, form, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                res = await updateCharacter(form._id, payload);
             } else {
-                // Create new
-                res = await axios.post(`http://localhost:5005/api/characters`, form, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                res = await createCharacter(payload);
             }
+    
             if (onSuccess) onSuccess(res.data);
             alert(`Character ${form._id ? 'updated' : 'created'}!`);
         } catch (err) {

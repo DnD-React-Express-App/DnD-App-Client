@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { deleteCharacter } from '../services/character.service';
+import { deleteCharacter, getCharacterById } from '../services/character.service';
 import axios from 'axios';
 
 const CharacterDetail = () => {
@@ -12,10 +12,7 @@ const CharacterDetail = () => {
     useEffect(() => {
         const fetchCharacter = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                const res = await axios.get(`http://localhost:5005/api/characters/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const res = await getCharacterById(id);
                 setCharacter(res.data);
             } catch (err) {
                 console.error(err);
@@ -56,6 +53,19 @@ const CharacterDetail = () => {
                     <li key={i}>{cls.name} (Level {cls.level})</li>
                 ))}
             </ul>
+
+            <h3>Items</h3>
+            {character.items?.length ? (
+                <ul>
+                    {character.items.map((item) => (
+                        <li key={item._id}>
+                            <strong>{item.name}</strong> ({item.type})
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No items equipped.</p>
+            )}
 
             <h2>Stats</h2>
             <ul>
