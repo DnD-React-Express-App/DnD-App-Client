@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
-    const [currentTab, setCurrentTab] = useState('Basics');
+    const [currentTab, setCurrentTab] = useState('Class');
 
     const [form, setForm] = useState({
         name: '',
@@ -104,7 +104,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
         <div>
             <div className="tabs">
-                {['Basics', 'Stats', 'Classes', 'Equipment'].map(tab => (
+                {['Class', 'Species', 'Stats', 'Background', 'Equipment'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setCurrentTab(tab)}
@@ -117,27 +117,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
 
             <form onSubmit={handleSubmit}>
-                {currentTab === 'Basics' && (
-                    <>
-                        <input
-                            placeholder="Character Name"
-                            value={form.name}
-                            onChange={e => setForm({ ...form, name: e.target.value })}
-                        />
-
-
-                        <select
-                            value={form.race}
-                            onChange={e => setForm({ ...form, race: e.target.value })}
-                        >
-                            <option value="">Select Race</option>
-                            {raceOptions.map(r => <option key={r} value={r}>{r}</option>)}
-                        </select>
-                    </>
-                )}
-
-
-                {currentTab === 'Classes' && (
+                {currentTab === 'Class' && (
                     <>
                         {
                             form.classes.map((cls, index) => (
@@ -179,6 +159,24 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     </>
                 )}
 
+                {currentTab === 'Species' && (
+                    <>
+                        <input
+                            placeholder="Character Name"
+                            value={form.name}
+                            onChange={e => setForm({ ...form, name: e.target.value })}
+                        />
+
+
+                        <select
+                            value={form.race}
+                            onChange={e => setForm({ ...form, race: e.target.value })}
+                        >
+                            <option value="">Select Race</option>
+                            {raceOptions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </>
+                )}
 
                 {currentTab === 'Stats' && (
                     <>
@@ -199,6 +197,18 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                             value={form.backstory}
                             onChange={e => setForm({ ...form, backstory: e.target.value })}
                             placeholder="Backstory..."
+                        />
+                    </>
+                )}
+
+                {currentTab === 'Background' && (
+                    <>
+                        <textarea
+                            placeholder="Enter backstory"
+                            value={form.backstory}
+                            onChange={e => setForm({ ...form, backstory: e.target.value })}
+                            rows={5}
+                            style={{ width: '100%', marginTop: '1rem' }}
                         />
                     </>
                 )}
