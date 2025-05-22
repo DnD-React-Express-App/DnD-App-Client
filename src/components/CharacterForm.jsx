@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
+
+    const [currentTab, setCurrentTab] = useState('Basics');
+
     const [form, setForm] = useState({
         name: '',
         race: '',
@@ -20,10 +23,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     });
 
     useEffect(() => {
-    if (initialData && initialData._id) {
-      setForm({ ...form, ...initialData });
-    }
-  }, [initialData]);
+        if (initialData && initialData._id) {
+            setForm({ ...form, ...initialData });
+        }
+    }, [initialData]);
 
     const classOptions = [
         'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
@@ -97,78 +100,112 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input
-                placeholder="Character Name"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-            />
 
-            <select
-                value={form.race}
-                onChange={e => setForm({ ...form, race: e.target.value })}
-            >
-                <option value="">Select Race</option>
-                {raceOptions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
 
-            {form.classes.map((cls, index) => (
-                <div key={index} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
-                    <select
-                        value={cls.name}
-                        onChange={e => handleClassChange(index, 'name', e.target.value)}
+        <div>
+            <div className="tabs">
+                {['Basics', 'Stats', 'Classes', 'Equipment'].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setCurrentTab(tab)}
+                        className={currentTab === tab ? 'active' : ''}
                     >
-                        <option value="">Select Class</option>
-                        {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-
-                    <input
-                        type="number"
-                        min="1"
-                        value={cls.level}
-                        onChange={e => handleClassChange(index, 'level', e.target.value)}
-                        placeholder="Class Level"
-                        style={{ width: '80px', marginLeft: '0.5rem' }}
-                    />
-
-                    {form.classes.length > 1 && (
-                        <button
-                            type="button"
-                            onClick={() => removeClass(index)}
-                            style={{ marginLeft: '0.5rem' }}
-                            aria-label={`Remove class ${index + 1}`}
-                        >
-                            Remove
-                        </button>
-                    )}
-                </div>
-            ))}
-
-            <button type="button" onClick={addClass}>
-                + Add Class
-            </button>
-
-            <div>
-                {Object.keys(form.stats).map(stat => (
-                    <div key={stat}>
-                        <label>{stat}</label>
-                        <input
-                            type="number"
-                            value={form.stats[stat]}
-                            onChange={e => handleStatChange(stat, e.target.value)}
-                        />
-                    </div>
+                        {tab}
+                    </button>
                 ))}
             </div>
 
-            <textarea
-                value={form.backstory}
-                onChange={e => setForm({ ...form, backstory: e.target.value })}
-                placeholder="Backstory..."
-            />
 
-            <button type="submit">Save Character</button>
-        </form>
+            <form onSubmit={handleSubmit}>
+                {currentTab === 'Basics' && (
+                    <>
+                        <input
+                            placeholder="Character Name"
+                            value={form.name}
+                            onChange={e => setForm({ ...form, name: e.target.value })}
+                        />
+
+
+                        <select
+                            value={form.race}
+                            onChange={e => setForm({ ...form, race: e.target.value })}
+                        >
+                            <option value="">Select Race</option>
+                            {raceOptions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </>
+                )}
+
+
+                {currentTab === 'Classes' && (
+                    <>
+                        {
+                            form.classes.map((cls, index) => (
+                                <div key={index} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
+                                    <select
+                                        value={cls.name}
+                                        onChange={e => handleClassChange(index, 'name', e.target.value)}
+                                    >
+                                        <option value="">Select Class</option>
+                                        {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={cls.level}
+                                        onChange={e => handleClassChange(index, 'level', e.target.value)}
+                                        placeholder="Class Level"
+                                        style={{ width: '80px', marginLeft: '0.5rem' }}
+                                    />
+
+                                    {form.classes.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeClass(index)}
+                                            style={{ marginLeft: '0.5rem' }}
+                                            aria-label={`Remove class ${index + 1}`}
+                                        >
+                                            Remove
+                                        </button>
+                                    )}
+                                </div>
+                            ))
+                        }
+
+                        <button type="button" onClick={addClass}>
+                            + Add Class
+                        </button>
+                    </>
+                )}
+
+
+                {currentTab === 'Stats' && (
+                    <>
+                        <div>
+                            {Object.keys(form.stats).map(stat => (
+                                <div key={stat}>
+                                    <label>{stat}</label>
+                                    <input
+                                        type="number"
+                                        value={form.stats[stat]}
+                                        onChange={e => handleStatChange(stat, e.target.value)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <textarea
+                            value={form.backstory}
+                            onChange={e => setForm({ ...form, backstory: e.target.value })}
+                            placeholder="Backstory..."
+                        />
+                    </>
+                )}
+
+                <button type="submit">Save Character</button>
+            </form>
+        </div>
     );
 };
 
