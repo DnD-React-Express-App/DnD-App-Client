@@ -51,9 +51,6 @@ function ItemForm({ initialData = {}, onSubmit }) {
             <select name="type" value={formData.type} onChange={handleChange}>
                 <option>Weapon</option>
                 <option>Armor</option>
-                <option>Potion</option>
-                <option>Tool</option>
-                <option>Misc</option>
             </select>
 
             {formData.type === 'Armor' && (
