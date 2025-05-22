@@ -18,6 +18,7 @@ import Items from './pages/Items';
 import CreateItem from './pages/CreateItem';
 import EditItem from './pages/EditItem';
 import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
       </Routes>
     </div>
   );
