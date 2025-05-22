@@ -192,12 +192,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                 </div>
                             ))}
                         </div>
-
-                        <textarea
-                            value={form.backstory}
-                            onChange={e => setForm({ ...form, backstory: e.target.value })}
-                            placeholder="Backstory..."
-                        />
                     </>
                 )}
 
