@@ -16,6 +16,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [allClassFeatures, setAllClassFeatures] = useState({});
     const [classFeatures, setClassFeatures] = useState({});
+    const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+
 
     const [form, setForm] = useState({
         name: '',
@@ -30,6 +32,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         },
         classes: [{ name: '', level: 1 }],
         level: 1,
+        background: '',
         backstory: '',
         ...initialData,
     });
@@ -144,6 +147,27 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             classes: prev.classes.filter((_, i) => i !== index)
         }));
     };
+
+    useEffect(() => {
+        const fetchBackgroundFeatures = async () => {
+            if (!form.background) {
+                setBackgroundFeatures([]);
+                return;
+            }
+
+            try {
+                const res = await fetch('/data/backgrounds.json');
+                const backgroundsData = await res.json();
+                const features = backgroundsData[form.background]?.features || [];
+                setBackgroundFeatures(features);
+            } catch (err) {
+                console.error('Failed to load background features:', err);
+                setBackgroundFeatures([]);
+            }
+        };
+
+        fetchBackgroundFeatures();
+    }, [form.background]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -338,6 +362,35 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
                 {currentTab === 'Background' && (
                     <>
+                        <label>Select Background:</label>
+                        <select
+                            value={form.background}
+                            onChange={e => setForm({ ...form, background: e.target.value })}
+                        >
+                            <option value="">-- Select Background --</option>
+                            <option value="Acolyte">Acolyte</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Folk Hero">Folk Hero</option>
+                            <option value="Noble">Noble</option>
+                            <option value="Outlander">Outlander</option>
+                            <option value="Sage">Sage</option>
+                            <option value="Soldier">Soldier</option>
+                            {/* Add more if you support them */}
+                        </select>
+
+                        {backgroundFeatures.length > 0 && (
+                            <div style={{ marginTop: '1rem' }}>
+                                <strong>Background Features:</strong>
+                                <ul>
+                                    {backgroundFeatures.map((feature, idx) => (
+                                        <li key={feature._id || feature.name || idx}>
+                                            <strong>{feature.name}</strong>: {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
                         <textarea
                             placeholder="Enter backstory"
                             value={form.backstory}

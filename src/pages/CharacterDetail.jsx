@@ -10,6 +10,8 @@ const CharacterDetail = () => {
     const [loading, setLoading] = useState(true);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
+    const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -72,6 +74,25 @@ const CharacterDetail = () => {
 
         fetchClassFeatures();
     }, [character?.classes]);
+
+    useEffect(() => {
+        const fetchBackgroundFeatures = async () => {
+            if (!character?.background) return;
+
+            try {
+                const res = await fetch('/data/backgrounds.json');
+                const backgroundData = await res.json();
+
+                const features = backgroundData[character.background]?.features || [];
+                setBackgroundFeatures(features);
+            } catch (err) {
+                console.error('Failed to load background features:', err);
+                setBackgroundFeatures([]);
+            }
+        };
+
+        fetchBackgroundFeatures();
+    }, [character?.background]);
 
 
     const handleDelete = async () => {
@@ -166,6 +187,25 @@ const CharacterDetail = () => {
             </ul>
 
             <h2>Backstory</h2>
+            {character.background && (
+                <>
+                    <h2>Background</h2>
+                    <p><strong>{character.background}</strong></p>
+
+                    {backgroundFeatures.length > 0 && (
+                        <>
+                            <h3>Background Features</h3>
+                            <ul>
+                                {backgroundFeatures.map((feature, index) => (
+                                    <li key={feature._id || feature.name || index}>
+                                        <strong>{feature.name}:</strong> {feature.description}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </>
+            )}
             <p>{character.backstory || <em>No backstory provided</em>}</p>
 
             <button onClick={(e) => {

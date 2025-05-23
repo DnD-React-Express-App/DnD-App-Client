@@ -1,0 +1,18 @@
+{
+  "Acolyte": {
+    "features": [
+      {
+        "name": "Shelter of the Faithful",
+        "description": "As an acolyte, you command the respect of those who share your faith..."
+      }
+    ]
+  },
+  "Criminal": {
+    "features": [
+      {
+        "name": "Criminal Contact",
+        "description": "You have a reliable and trustworthy contact who acts as your liaison..."
+      }
+    ]
+  }
+}
