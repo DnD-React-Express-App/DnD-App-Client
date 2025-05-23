@@ -6,7 +6,10 @@ function CreateItem() {
   const navigate = useNavigate();
 
   const handleCreate = (data) => {
-    return createItem(data).then(() => navigate('/items'));
+    return createItem(data)
+      .then(() =>
+        navigate('/items')
+      );
   };
 
   return (

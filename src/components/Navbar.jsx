@@ -18,6 +18,7 @@ function Navbar() {
         <NavLink to="/">Home</NavLink>
         {isLoggedIn && <NavLink to="/characters">Characters</NavLink>}
         {isLoggedIn && <NavLink to="/items">Items</NavLink>}
+        {isLoggedIn && <NavLink to="/spells">Spells</NavLink>}
         {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
         {!isLoggedIn && <NavLink to="/login">Login</NavLink>}
         {!isLoggedIn && <NavLink to="/signup">Sign Up</NavLink>}
