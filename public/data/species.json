@@ -1,0 +1,24 @@
+{
+  "Elf": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in the dark up to 60 feet."
+      },
+      {
+        "name": "Keen Senses",
+        "description": "You have proficiency in the Perception skill."
+      }
+    ],
+    "key": "elf"
+  },
+  "Dwarf": {
+    "abilities": [
+      {
+        "name": "Dwarven Resilience",
+        "description": "You have advantage on saving throws against poison."
+      }
+    ],
+    "key": "dwarf"
+  }
+}

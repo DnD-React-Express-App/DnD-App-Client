@@ -56,23 +56,25 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     ];
 
     const handleRaceChange = async (e) => {
-        const selectedRace = e.target.value;
-        setForm({ ...form, race: selectedRace });
+    const selectedRace = e.target.value;
+    setForm(prev => ({ ...prev, race: selectedRace }));
 
-        if (!selectedRace) {
-            setSpeciesFeatures([]);
-            return;
-        }
+    if (!selectedRace) {
+        setSpeciesFeatures([]);
+        return;
+    }
 
-        try {
-            const { data } = await axios.get(`/species/species/${selectedRace}`);
-            console.log('Fetched species data:', data);
-            setSpeciesFeatures(data.abilities || []);
-        } catch (err) {
-            console.error('Error fetching species abilities:', err);
-            setSpeciesFeatures([]);
-        }
-    };
+    try {
+        const res = await fetch('/data/species.json');
+        const speciesData = await res.json();
+
+        const features = speciesData[selectedRace]?.abilities || [];
+        setSpeciesFeatures(features);
+    } catch (err) {
+        console.error('Failed to load species data:', err);
+        setSpeciesFeatures([]);
+    }
+};
 
     const handleStatChange = (stat, value) => {
         setForm(prev => ({
