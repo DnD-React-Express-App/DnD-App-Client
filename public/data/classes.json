@@ -1,0 +1,22 @@
+{
+  "Barbarian": {
+    "features": [
+      {
+        "name": "Rage",
+        "description": "Gain advantage on Strength checks and saves, plus bonus damage."
+      },
+      {
+        "name": "Unarmored Defense",
+        "description": "While not wearing armor, your AC equals 10 + Dex mod + Con mod."
+      }
+    ]
+  },
+  "Bard": {
+    "features": [
+      {
+        "name": "Bardic Inspiration",
+        "description": "Give an inspiration die to an ally within 60 feet."
+      }
+    ]
+  }
+}

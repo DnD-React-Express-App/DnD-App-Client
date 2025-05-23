@@ -14,6 +14,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedArmor, setSelectedArmor] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
+    const [classFeatures, setClassFeatures] = useState({});
 
     const [form, setForm] = useState({
         name: '',
@@ -56,25 +57,25 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     ];
 
     const handleRaceChange = async (e) => {
-    const selectedRace = e.target.value;
-    setForm(prev => ({ ...prev, race: selectedRace }));
+        const selectedRace = e.target.value;
+        setForm(prev => ({ ...prev, race: selectedRace }));
 
-    if (!selectedRace) {
-        setSpeciesFeatures([]);
-        return;
-    }
+        if (!selectedRace) {
+            setSpeciesFeatures([]);
+            return;
+        }
 
-    try {
-        const res = await fetch('/data/species.json');
-        const speciesData = await res.json();
+        try {
+            const res = await fetch('/data/species.json');
+            const speciesData = await res.json();
 
-        const features = speciesData[selectedRace]?.abilities || [];
-        setSpeciesFeatures(features);
-    } catch (err) {
-        console.error('Failed to load species data:', err);
-        setSpeciesFeatures([]);
-    }
-};
+            const features = speciesData[selectedRace]?.abilities || [];
+            setSpeciesFeatures(features);
+        } catch (err) {
+            console.error('Failed to load species data:', err);
+            setSpeciesFeatures([]);
+        }
+    };
 
     const handleStatChange = (stat, value) => {
         setForm(prev => ({
@@ -86,7 +87,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }));
     };
 
-    const handleClassChange = (index, field, value) => {
+    const handleClassChange = async (index, field, value) => {
         const updatedClasses = form.classes.map((cls, i) => {
             if (i === index) {
                 return {
@@ -96,7 +97,26 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             }
             return cls;
         });
+
         setForm(prev => ({ ...prev, classes: updatedClasses }));
+
+        if (field === 'name') {
+            try {
+                const res = await fetch('/data/classes.json');
+                const data = await res.json();
+
+                const selectedClass = value;
+                const features = data[selectedClass]?.features || [];
+
+                setClassFeatures(prev => ({
+                    ...prev,
+                    [index]: features
+                }));
+            } catch (err) {
+                console.error('Failed to load class features:', err);
+                setClassFeatures(prev => ({ ...prev, [index]: [] }));
+            }
+        }
     };
 
     const addClass = () => {
@@ -177,6 +197,19 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                         placeholder="Class Level"
                                         style={{ width: '80px', marginLeft: '0.5rem' }}
                                     />
+
+                                    {classFeatures[index]?.length > 0 && (
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <strong>Class Features:</strong>
+                                            <ul>
+                                                {classFeatures[index].map(feature => (
+                                                    <li key={feature.name}>
+                                                        <strong>{feature.name}</strong>: {feature.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
 
                                     {form.classes.length > 1 && (
                                         <button
