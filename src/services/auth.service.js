@@ -4,7 +4,6 @@ import API from '../api/axios';
 export const login = (email, password) => {
   return API.post('/auth/login', { email, password });
 };
-
 // Sign up a new user
 export const signup = ({ email, name, password }) => {
   return API.post('/auth/signup', { email, name, password });
