@@ -35,7 +35,7 @@ h1 {
   line-height: 1.1;
 }
 h2 {
-  color: rgba(255, 253, 253, 0.87);
+  color: white(255, 253, 253, 0.87);
 }
 
 button {
