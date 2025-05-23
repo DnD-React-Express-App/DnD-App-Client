@@ -8,6 +8,7 @@ const CharacterDetail = () => {
     const navigate = useNavigate();
     const [character, setCharacter] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [speciesFeatures, setSpeciesFeatures] = useState([]);
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -24,6 +25,25 @@ const CharacterDetail = () => {
 
         fetchCharacter();
     }, [id]);
+
+    useEffect(() => {
+        const fetchSpeciesFeatures = async () => {
+            if (!character?.race) return;
+
+            try {
+                const res = await fetch('/data/species.json');
+                const speciesData = await res.json();
+
+                const features = speciesData[character.race]?.abilities || [];
+                setSpeciesFeatures(features);
+            } catch (err) {
+                console.error('Failed to load species features:', err);
+                setSpeciesFeatures([]);
+            }
+        };
+
+        fetchSpeciesFeatures();
+    }, [character?.race]);
 
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this character?')) {
@@ -44,7 +64,19 @@ const CharacterDetail = () => {
         <div>
             <button onClick={() => navigate('/characters')}>← Back</button>
             <h1>{character.name}</h1>
-            <p><strong>Race:</strong> {character.race}</p>
+            <p><strong>Species:</strong> {character.race}</p>
+            {speciesFeatures.length > 0 && (
+                <>
+                    <h3>Species Features</h3>
+                    <ul>
+                        {speciesFeatures.map((feature) => (
+                            <li key={feature._id || feature.name}>
+                                <strong>{feature.name}:</strong> {feature.description}
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
             <p><strong>Total Level:</strong> {character.level}</p>
 
             <h2>Classes</h2>
