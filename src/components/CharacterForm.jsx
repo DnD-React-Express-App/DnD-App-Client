@@ -13,6 +13,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [weaponOptions, setWeaponOptions] = useState([]);
     const [selectedArmor, setSelectedArmor] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
+    const [speciesFeatures, setSpeciesFeatures] = useState([]);
 
     const [form, setForm] = useState({
         name: '',
@@ -53,28 +54,27 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         'Tiefling', 'Aasimar', 'Genasi', 'Goliath', 'Tabaxi', 'Triton', 'Firbolg',
         'Kenku', 'Lizardfolk', 'Goblin', 'Orc', 'Bugbear'
     ];
-    const raceAbilities = {
-        Human: "Versatile: +1 to all ability scores.",
-        Elf: "Darkvision, Keen Senses, Fey Ancestry.",
-        Dwarf: "Darkvision, Dwarven Resilience, Tool Proficiency.",
-        Halfling: "Lucky, Brave, Halfling Nimbleness.",
-        Gnome: "Darkvision, Gnome Cunning.",
-        HalfElf: "Darkvision, Fey Ancestry, Skill Versatility.",
-        HalfOrc: "Darkvision, Relentless Endurance, Savage Attacks.",
-        Dragonborn: "Draconic Ancestry, Breath Weapon, Damage Resistance.",
-        Tiefling: "Darkvision, Hellish Resistance, Infernal Legacy.",
-        Aasimar: "Celestial Resistance, Healing Hands, Light Bearer.",
-        Genasi: "Elemental Resistance and innate spells (varies by type).",
-        Goliath: "Powerful Build, Stone's Endurance, Mountain Born.",
-        Tabaxi: "Feline Agility, Cat's Claws, Cat's Talent.",
-        Triton: "Amphibious, Control Air and Water, Guardian of the Depths.",
-        Firbolg: "Firbolg Magic, Hidden Step, Powerful Build.",
-        Kenku: "Expert Forgery, Kenku Training, Mimicry.",
-        Lizardfolk: "Bite, Cunning Artisan, Hold Breath, Natural Armor.",
-        Goblin: "Fury of the Small, Nimble Escape.",
-        Orc: "Aggressive, Menacing, Powerful Build.",
-        Bugbear: "Long-Limbed, Powerful Build, Sneaky."
-    };
+
+    const handleRaceChange = async (e) => {
+    const selectedRace = e.target.value;
+    setForm(prev => ({ ...prev, race: selectedRace }));
+
+    if (!selectedRace) {
+        setSpeciesFeatures([]);
+        return;
+    }
+
+    try {
+        const res = await fetch('/data/species.json');
+        const speciesData = await res.json();
+
+        const features = speciesData[selectedRace]?.abilities || [];
+        setSpeciesFeatures(features);
+    } catch (err) {
+        console.error('Failed to load species data:', err);
+        setSpeciesFeatures([]);
+    }
+};
 
     const handleStatChange = (stat, value) => {
         setForm(prev => ({
@@ -117,19 +117,19 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('authToken');
-    
+
             const payload = {
                 ...form,
                 items: [selectedArmor, selectedWeapon].filter(Boolean),
             };
-    
+
             let res;
             if (form._id) {
                 res = await updateCharacter(form._id, payload);
             } else {
                 res = await createCharacter(payload);
             }
-    
+
             if (onSuccess) onSuccess(res.data);
             alert(`Character ${form._id ? 'updated' : 'created'}!`);
         } catch (err) {
@@ -208,7 +208,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
                         <select
                             value={form.race}
-                            onChange={e => setForm({ ...form, race: e.target.value })}
+                            onChange={handleRaceChange}
                         >
                             <option value="">Select Race</option>
                             {raceOptions.map(r => (
@@ -216,10 +216,16 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                             ))}
                         </select>
 
-                        {form.race && raceAbilities[form.race] && (
-                            <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-                                <strong>{form.race} Abilities:</strong>
-                                <p>{raceAbilities[form.race]}</p>
+                        {speciesFeatures.length > 0 && (
+                            <div style={{ marginTop: '1rem' }}>
+                                <strong>Racial Features:</strong>
+                                <ul>
+                                    {speciesFeatures.map(feature => (
+                                        <li key={feature._id}>
+                                            <strong>{feature.name}</strong>: {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
                     </>
