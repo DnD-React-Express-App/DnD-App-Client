@@ -14,6 +14,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedArmor, setSelectedArmor] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
+    const [allClassFeatures, setAllClassFeatures] = useState({});
     const [classFeatures, setClassFeatures] = useState({});
 
     const [form, setForm] = useState({
@@ -45,6 +46,20 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             setForm({ ...form, ...initialData });
         }
     }, [initialData]);
+
+    useEffect(() => {
+        const fetchClassFeatures = async () => {
+            try {
+                const res = await fetch('/data/classes.json');
+                const data = await res.json();
+                setAllClassFeatures(data);
+            } catch (err) {
+                console.error('Failed to load class features:', err);
+            }
+        };
+
+        fetchClassFeatures();
+    }, []);
 
     const classOptions = [
         'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
@@ -87,7 +102,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }));
     };
 
-    const handleClassChange = async (index, field, value) => {
+    const handleClassChange = (index, field, value) => {
         const updatedClasses = form.classes.map((cls, i) => {
             if (i === index) {
                 return {
@@ -100,23 +115,20 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
         setForm(prev => ({ ...prev, classes: updatedClasses }));
 
-        if (field === 'name') {
-            try {
-                const res = await fetch('/data/classes.json');
-                const data = await res.json();
+        const selectedClass = field === 'name' ? value : updatedClasses[index].name;
+        const selectedLevel = field === 'level' ? Number(value) : updatedClasses[index].level;
 
-                const selectedClass = value;
-                const features = data[selectedClass]?.features || [];
+        if (!selectedClass || !allClassFeatures[selectedClass]) return;
 
-                setClassFeatures(prev => ({
-                    ...prev,
-                    [index]: features
-                }));
-            } catch (err) {
-                console.error('Failed to load class features:', err);
-                setClassFeatures(prev => ({ ...prev, [index]: [] }));
-            }
-        }
+        const allFeatures = allClassFeatures[selectedClass].features || [];
+
+        const unlocked = allFeatures.filter(f => f.level <= selectedLevel);
+        const upcoming = allFeatures.filter(f => f.level > selectedLevel);
+
+        setClassFeatures(prev => ({
+            ...prev,
+            [index]: { unlocked, upcoming }
+        }));
     };
 
     const addClass = () => {
@@ -198,13 +210,26 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                         style={{ width: '80px', marginLeft: '0.5rem' }}
                                     />
 
-                                    {classFeatures[index]?.length > 0 && (
+                                    {classFeatures[index]?.unlocked?.length > 0 && (
                                         <div style={{ marginTop: '0.5rem' }}>
-                                            <strong>Class Features:</strong>
+                                            <strong>Unlocked Features:</strong>
                                             <ul>
-                                                {classFeatures[index].map(feature => (
+                                                {classFeatures[index].unlocked.map(feature => (
                                                     <li key={feature.name}>
-                                                        <strong>{feature.name}</strong>: {feature.description}
+                                                        <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {classFeatures[index]?.upcoming?.length > 0 && (
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <strong>Upcoming Features:</strong>
+                                            <ul>
+                                                {classFeatures[index].upcoming.map(feature => (
+                                                    <li key={feature.name}>
+                                                        <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
                                                     </li>
                                                 ))}
                                             </ul>
