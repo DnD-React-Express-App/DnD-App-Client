@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteCharacter, getCharacterById } from '../../services/character.service';
-import axios from 'axios';
+import allProficiencies from '../../../public/data/proficiencies.json';
+
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -105,6 +106,39 @@ const CharacterDetail = () => {
                     <li key={stat}><strong>{stat}:</strong> {value}</li>
                 ))}
             </ul>
+
+            <h2>Proficiencies</h2>
+            {character.proficiencies ? (
+                Object.entries(allProficiencies).map(([type, list]) => (
+                    <div key={type}>
+                        <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
+                        <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                            {list.map(prof => {
+                                const isSelected = character.proficiencies?.[type]?.includes(prof);
+                                return (
+                                    <li
+                                        key={prof}
+                                        style={{
+                                            display: 'inline-block',
+                                            margin: '4px 8px 4px 0',
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            backgroundColor: isSelected ? '#4caf50' : '#eee',
+                                            color: isSelected ? 'white' : '#333',
+                                            fontWeight: isSelected ? 'bold' : 'normal',
+                                        }}
+                                    >
+                                        {prof}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                ))
+            ) : (
+                <p><em>No proficiencies selected.</em></p>
+            )}
+
 
             <h2>Backstory</h2>
             <p>{character.backstory || <em>No backstory provided</em>}</p>
