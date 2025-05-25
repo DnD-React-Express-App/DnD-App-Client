@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getItemById, updateItem } from '../services/item.service';
-import ItemForm from '../components/ItemFormFields';
+import { getItemById, updateItem } from '../../services/item.service';
+import ItemForm from '../../components/ItemComponents/ItemFormFields';
 
 function EditItem() {
   const { id } = useParams();

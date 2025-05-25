@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteCharacter } from '../services/character.service';
-import '../CharacterCard.css';
+import { deleteCharacter } from '../../services/character.service';
+import '../../CharacterCard.css';
 
 const CharacterCard = ({ character, onDelete }) => {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { SpellContext } from '../context/spell.context';
-import SpellDetails from '../components/SpellDetails';
+import { SpellContext } from '../../context/spell.context';
+import SpellDetails from '../../components/SpellComponents/SpellDetails';
 
 const SpellDetailsPage = () => {
   const { id } = useParams();

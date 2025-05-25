@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { deleteCharacter, getCharacterById } from '../services/character.service';
+import { deleteCharacter, getCharacterById } from '../../services/character.service';
 import axios from 'axios';
 
 const CharacterDetail = () => {

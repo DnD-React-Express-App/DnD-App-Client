@@ -1,26 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ArmorFormFields from './ArmourFormFields';
 import WeaponFormFields from './WeaponFormFields';
 
-
-
 function ItemForm({ initialData = {}, onSubmit }) {
-    const [formData, setFormData] = useState({
+    const blankItem = {
         name: '',
         description: '',
         rarity: 'Common',
         type: 'Weapon',
-        armorName: '',
         armorType: '',
         weight: '',
-        ...initialData,
-    });
+    };
+
+    const [formData, setFormData] = useState(blankItem);
+
+    useEffect(() => {
+        setFormData(initialData ? { ...blankItem, ...initialData } : blankItem);
+    }, [initialData]);
 
     const [errorMessage, setErrorMessage] = useState('');
 
+    useEffect(() => {
+        if (initialData && initialData.name) {
+            setFormData(prev => ({
+                ...prev,
+                ...initialData,
+            }));
+        }
+    }, [initialData]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+
+        if (name === 'type') {
+            setFormData(prev => ({
+                ...prev,
+                type: value,
+            }));
+            return;
+        }
+
+        setFormData(prev => ({
             ...prev,
             [name]: value,
         }));
@@ -31,12 +51,7 @@ function ItemForm({ initialData = {}, onSubmit }) {
 
         const dataToSubmit = {
             ...formData,
-            name:
-                formData.type === 'Armor'
-                    ? formData.armorName
-                    : formData.type === 'Weapon'
-                        ? formData.weaponName
-                        : formData.name,
+            weight: formData.weight ? Number(formData.weight) : undefined,
         };
 
         onSubmit(dataToSubmit).catch((err) => {
@@ -52,6 +67,9 @@ function ItemForm({ initialData = {}, onSubmit }) {
                 <option>Weapon</option>
                 <option>Armor</option>
             </select>
+
+            <label>{formData.type} Name:</label>
+            <input name="name" value={formData.name} onChange={handleChange} />
 
             {formData.type === 'Armor' && (
                 <ArmorFormFields formData={formData} handleChange={handleChange} />
@@ -73,6 +91,14 @@ function ItemForm({ initialData = {}, onSubmit }) {
                 <option>Legendary</option>
                 <option>Artifact</option>
             </select>
+
+            <label>Weight:</label>
+            <input
+                name="weight"
+                type="number"
+                value={formData.weight}
+                onChange={handleChange}
+            />
 
             <button type="submit">Save Item</button>
 

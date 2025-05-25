@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo } from "react";
-import { SpellContext } from "../context/spell.context";
+import { SpellContext } from "../../context/spell.context";
 import SpellCard from "./SpellCard";
 
 const SPELL_SCHOOLS = [

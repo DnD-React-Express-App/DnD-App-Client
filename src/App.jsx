@@ -5,26 +5,26 @@ import Navbar from './components/Navbar';
 
 import Home from './pages/Home';
 
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Login from './pages/AuthPages/Login';
+import Signup from './pages/AuthPages/Signup';
 
-import Characters from './pages/Characters';
-import CharacterCreate from './pages/CharacterCreate';
-import CharacterDetail from './pages/CharacterDetail';
-import EditCharacter from './pages/EditCharacter';
+import Characters from './pages/CharacterPages/Characters';
+import CharacterCreate from './pages/CharacterPages/CharacterCreate';
+import CharacterDetail from './pages/CharacterPages/CharacterDetail';
+import EditCharacter from './pages/CharacterPages/EditCharacter';
 
-import Items from './pages/Items';
-import ItemDetailsPage from './pages/ItemDetailsPage';
-import CreateItem from './pages/CreateItem';
-import EditItem from './pages/EditItem';
+import Items from './pages/ItemPages/Items';
+import ItemDetailsPage from './pages/ItemPages/ItemDetailsPage';
+import CreateItem from './pages/ItemPages/CreateItem';
+import EditItem from './pages/ItemPages/EditItem';
 
-import Spells from './pages/Spells';
-import CreateSpell from './pages/CreateSpell'
-import SpellDetailsPage from './pages/SpellDetailsPage';
-import EditSpell from './pages/EditSpell';
+import Spells from './pages/SpellPages/Spells';
+import CreateSpell from './pages/SpellPages/CreateSpell'
+import SpellDetailsPage from './pages/SpellPages/SpellDetailsPage';
+import EditSpell from './pages/SpellPages/EditSpell';
 
-import Profile from './pages/Profile';
-import EditProfile from './pages/EditProfile';
+import Profile from './pages/ProfilePages/Profile';
+import EditProfile from './pages/ProfilePages/EditProfile';
 
 
 

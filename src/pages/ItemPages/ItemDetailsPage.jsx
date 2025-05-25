@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { getItemById, deleteItem } from '../services/item.service';
-import ItemDetails from '../components/ItemDetails';
+import { getItemById, deleteItem } from '../../services/item.service';
+import ItemDetails from '../../components/ItemComponents/ItemDetails';
 
 function ItemDetailsPage() {
     const { id } = useParams();

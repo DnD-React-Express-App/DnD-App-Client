@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { createItem } from '../services/item.service';
-import ItemForm from '../components/ItemFormFields';
+import { createItem } from '../../services/item.service';
+import ItemForm from '../../components/ItemComponents/ItemFormFields';
 
 function CreateItem() {
   const navigate = useNavigate();

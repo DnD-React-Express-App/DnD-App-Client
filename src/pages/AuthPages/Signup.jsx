@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { signup } from '../services/auth.service';
-import UserForm from '../components/UserForm';
+import { signup } from '../../services/auth.service';
+import UserForm from '../../components/UserComponents/UserForm';
 import { useContext } from 'react';
-import { AuthContext } from '../context/auth.context';
+import { AuthContext } from '../../context/auth.context';
 
 function Signup() {
   const { storeToken, authenticateUser } = useContext(AuthContext);

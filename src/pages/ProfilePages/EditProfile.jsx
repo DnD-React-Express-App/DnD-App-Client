@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/auth.context';
-import { updateUser } from '../services/user.service';
-import UserForm from '../components/UserForm';
+import { AuthContext } from '../../context/auth.context';
+import { updateUser } from '../../services/user.service';
+import UserForm from '../../components/UserComponents/UserForm';
 
 function EditProfile() {
     const { user, storeToken, authenticateUser } = useContext(AuthContext);

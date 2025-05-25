@@ -35,14 +35,6 @@ function WeaponFormFields({ formData, handleChange }) {
           <option>LightHammer</option>
           <option>Sickle</option>
         </select>
-  
-        <label>Weight:</label>
-        <input
-          type="number"
-          name="weight"
-          value={formData.weight}
-          onChange={handleChange}
-        />
       </>
     );
   }

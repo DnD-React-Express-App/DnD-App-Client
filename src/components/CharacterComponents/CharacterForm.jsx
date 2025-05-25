@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { ItemContext } from '../context/item.context';
-import { createCharacter, updateCharacter } from '../services/character.service';
+import { ItemContext } from '../../context/item.context';
+import { createCharacter, updateCharacter } from '../../services/character.service';
+import proficiencies from '../../../public/data/proficiencies.json';
+
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
@@ -29,6 +31,12 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         classes: [{ name: '', level: 1 }],
         level: 1,
         backstory: '',
+        proficiencies: {
+            skills: [],
+            armor: [],
+            weapons: [],
+            tools: []
+        },
         ...initialData,
     });
 
@@ -56,25 +64,25 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     ];
 
     const handleRaceChange = async (e) => {
-    const selectedRace = e.target.value;
-    setForm(prev => ({ ...prev, race: selectedRace }));
+        const selectedRace = e.target.value;
+        setForm(prev => ({ ...prev, race: selectedRace }));
 
-    if (!selectedRace) {
-        setSpeciesFeatures([]);
-        return;
-    }
+        if (!selectedRace) {
+            setSpeciesFeatures([]);
+            return;
+        }
 
-    try {
-        const res = await fetch('/data/species.json');
-        const speciesData = await res.json();
+        try {
+            const res = await fetch('/data/species.json');
+            const speciesData = await res.json();
 
-        const features = speciesData[selectedRace]?.abilities || [];
-        setSpeciesFeatures(features);
-    } catch (err) {
-        console.error('Failed to load species data:', err);
-        setSpeciesFeatures([]);
-    }
-};
+            const features = speciesData[selectedRace]?.abilities || [];
+            setSpeciesFeatures(features);
+        } catch (err) {
+            console.error('Failed to load species data:', err);
+            setSpeciesFeatures([]);
+        }
+    };
 
     const handleStatChange = (stat, value) => {
         setForm(prev => ({
@@ -143,7 +151,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
         <div>
             <div className="tabs">
-                {['Class', 'Species', 'Stats', 'Background', 'Equipment'].map(tab => (
+                {['Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setCurrentTab(tab)}
@@ -230,6 +238,42 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                         )}
                     </>
                 )}
+
+                {currentTab === 'Proficiencies' && (
+                    <>
+                        <h3>Proficiencies</h3>
+
+                        {Object.entries(proficiencies).map(([type, list]) => (
+                            <div key={type} style={{ marginBottom: '1rem' }}>
+                                <h4>{type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+                                {list.map(item => (
+                                    <label key={item} style={{ display: 'block' }}>
+                                        <input
+                                            type="checkbox"
+                                            value={item}
+                                            checked={form.proficiencies[type]?.includes(item)}
+                                            onChange={(e) => {
+                                                const isChecked = e.target.checked;
+                                                setForm(prev => ({
+                                                    ...prev,
+                                                    proficiencies: {
+                                                        ...prev.proficiencies,
+                                                        [type]: isChecked
+                                                            ? [...prev.proficiencies[type], item]
+                                                            : prev.proficiencies[type].filter(i => i !== item)
+                                                    }
+                                                }));
+                                            }}
+                                        />
+                                        {item}
+                                    </label>
+                                ))}
+                            </div>
+                        ))}
+                    </>
+                )}
+
+
 
                 {currentTab === 'Stats' && (
                     <>

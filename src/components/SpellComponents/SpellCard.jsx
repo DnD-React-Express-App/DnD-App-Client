@@ -1,5 +1,5 @@
 import React from "react";
-import '../SpellCard.css'
+import '../../SpellCard.css'
 import { Link } from "react-router-dom";
 
 const SpellCard = ({ spell }) => {

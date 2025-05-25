@@ -1,5 +1,5 @@
 import React from 'react';
-import CharacterForm from '../components/CharacterForm';
+import CharacterForm from '../../components/CharacterComponents/CharacterForm';
 import { useNavigate } from 'react-router-dom';
 
 const CharacterCreate = () => {

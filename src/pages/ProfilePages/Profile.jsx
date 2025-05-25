@@ -1,4 +1,4 @@
-import UserDetails from '../components/UserDetails';
+import UserDetails from '../../components/UserComponents/UserDetails';
 import { Link } from 'react-router-dom';
 
 function Profile() {

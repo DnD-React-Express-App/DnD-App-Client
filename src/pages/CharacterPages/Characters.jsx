@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../context/auth.context';
-import { getCharacters } from '../services/character.service';
-import CharacterList from '../components/CharacterList';
-import CharacterForm from '../components/CharacterForm';
+import { AuthContext } from '../../context/auth.context';
+import { getCharacters } from '../../services/character.service';
+import CharacterList from '../../components/CharacterComponents/CharacterList';
+import CharacterForm from '../../components/CharacterComponents/CharacterForm';
 
 function Characters() {
   const { isLoggedIn, user, isLoading } = useContext(AuthContext);

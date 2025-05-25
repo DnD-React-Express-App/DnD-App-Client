@@ -1,4 +1,4 @@
-import '../ItemCard.css'
+import '../../ItemCard.css'
 import { Link } from 'react-router-dom';
 
 function ItemCard({ item }) {

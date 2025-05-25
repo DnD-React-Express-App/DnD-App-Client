@@ -1,5 +1,5 @@
 import React from "react";
-import SpellList from "../components/SpellList";
+import SpellList from "../../components/SpellComponents/SpellList";
 import { Link } from 'react-router-dom';
 
 const Spells = () => {

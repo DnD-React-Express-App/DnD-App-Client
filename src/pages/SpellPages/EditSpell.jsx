@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { SpellContext } from '../context/spell.context';
-import SpellForm from '../components/SpellForm';
+import { SpellContext } from '../../context/spell.context';
+import SpellForm from '../../components/SpellComponents/SpellForm';
 
 const EditSpell = () => {
   const { id } = useParams();

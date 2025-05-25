@@ -1,7 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useContext } from 'react';
-import { SpellContext } from '../context/spell.context';
-import SpellForm from '../components/SpellForm';
+import { SpellContext } from '../../context/spell.context';
+import SpellForm from '../../components/SpellComponents/SpellForm';
 
 function CreateSpell() {
   const navigate = useNavigate();

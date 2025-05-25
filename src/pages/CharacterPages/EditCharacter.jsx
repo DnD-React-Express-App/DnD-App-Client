@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getCharacterById } from '../services/character.service';
-import CharacterForm from '../components/CharacterForm';
+import { getCharacterById } from '../../services/character.service';
+import CharacterForm from '../../components/CharacterComponents/CharacterForm';
 
 const EditCharacter = () => {
   const { id } = useParams();

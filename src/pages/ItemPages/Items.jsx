@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../context/auth.context';
-import { getItems } from '../services/item.service';
-import ItemList from '../components/ItemList';
+import { AuthContext } from '../../context/auth.context';
+import { getItems } from '../../services/item.service';
+import ItemList from '../../components/ItemComponents/ItemList';
 import { Link } from 'react-router-dom';
 
 function Items() {
