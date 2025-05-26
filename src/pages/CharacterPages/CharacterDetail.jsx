@@ -13,6 +13,8 @@ const CharacterDetail = () => {
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
 
+
+
     const skillToStatMap = {
         "Acrobatics": "dexterity",
         "Animal Handling": "wisdom",
@@ -37,7 +39,13 @@ const CharacterDetail = () => {
 
     const getModifier = (score) => Math.floor((score - 10) / 2);
 
-    const profBonus = 3;
+    const getProficiencyBonus = (level) => {
+        if (level >= 17) return 6;
+        if (level >= 13) return 5;
+        if (level >= 9) return 4;
+        if (level >= 5) return 3;
+        return 2;
+      };
 
 
     useEffect(() => {
@@ -137,6 +145,9 @@ const CharacterDetail = () => {
     if (loading) return <p>Loading character...</p>;
     if (!character) return <p>Character not found</p>;
 
+    const totalLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0);
+    const profBonus = getProficiencyBonus(totalLevel);
+
     return (
         <div>
             <button onClick={() => navigate('/characters')}>← Back</button>
@@ -154,7 +165,7 @@ const CharacterDetail = () => {
                     </ul>
                 </>
             )}
-            <p><strong>Total Level:</strong> {character.level}</p>
+            <p><strong>Total Level:</strong> {totalLevel}</p>
 
             <h2>Classes</h2>
             <ul>
