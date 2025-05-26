@@ -14,6 +14,40 @@ const CharacterDetail = () => {
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
 
 
+
+    const skillToStatMap = {
+        "Acrobatics": "dexterity",
+        "Animal Handling": "wisdom",
+        "Arcana": "intelligence",
+        "Athletics": "strength",
+        "Deception": "charisma",
+        "History": "intelligence",
+        "Insight": "wisdom",
+        "Intimidation": "charisma",
+        "Investigation": "intelligence",
+        "Medicine": "wisdom",
+        "Nature": "intelligence",
+        "Perception": "wisdom",
+        "Performance": "charisma",
+        "Persuasion": "charisma",
+        "Religion": "intelligence",
+        "Sleight of Hand": "dexterity",
+        "Stealth": "dexterity",
+        "Survival": "wisdom"
+    };
+
+
+    const getModifier = (score) => Math.floor((score - 10) / 2);
+
+    const getProficiencyBonus = (level) => {
+        if (level >= 17) return 6;
+        if (level >= 13) return 5;
+        if (level >= 9) return 4;
+        if (level >= 5) return 3;
+        return 2;
+      };
+
+
     useEffect(() => {
         const fetchCharacter = async () => {
             try {
@@ -111,6 +145,9 @@ const CharacterDetail = () => {
     if (loading) return <p>Loading character...</p>;
     if (!character) return <p>Character not found</p>;
 
+    const totalLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0);
+    const profBonus = getProficiencyBonus(totalLevel);
+
     return (
         <div>
             <button onClick={() => navigate('/characters')}>← Back</button>
@@ -128,7 +165,7 @@ const CharacterDetail = () => {
                     </ul>
                 </>
             )}
-            <p><strong>Total Level:</strong> {character.level}</p>
+            <p><strong>Total Level:</strong> {totalLevel}</p>
 
             <h2>Classes</h2>
             <ul>
@@ -182,9 +219,17 @@ const CharacterDetail = () => {
 
             <h2>Stats</h2>
             <ul>
-                {Object.entries(character.stats).map(([stat, value]) => (
-                    <li key={stat}><strong>{stat}:</strong> {value}</li>
-                ))}
+                {Object.entries(character.stats).map(([stat, value]) => {
+                    const mod = getModifier(value);
+                    return (
+                        <li key={stat}>
+                            <strong>{stat.toUpperCase()}:</strong> {value}
+                            <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                ({mod >= 0 ? '+' : ''}{mod})
+                            </span>
+                        </li>
+                    );
+                })}
             </ul>
 
             <h2>Proficiencies</h2>
@@ -195,6 +240,14 @@ const CharacterDetail = () => {
                         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                             {list.map(prof => {
                                 const isSelected = character.proficiencies?.[type]?.includes(prof);
+                                const isSkill = type === 'skills';
+                                const statKey = isSkill ? skillToStatMap[prof] : null;
+                                const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                const totalMod = isSkill && statValue !== null
+                                    ? baseMod + (isSelected ? profBonus : 0)
+                                    : null;
+
                                 return (
                                     <li
                                         key={prof}
@@ -209,9 +262,15 @@ const CharacterDetail = () => {
                                         }}
                                     >
                                         {prof}
+                                        {isSkill && statValue !== null && (
+                                            <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
+                                                ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                            </span>
+                                        )}
                                     </li>
                                 );
                             })}
+
                         </ul>
                     </div>
                 ))
