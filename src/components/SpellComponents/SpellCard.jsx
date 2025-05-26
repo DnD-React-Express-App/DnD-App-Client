@@ -1,19 +1,22 @@
 import React from "react";
-import '../../SpellCard.css'
-import { Link } from "react-router-dom";
+import "../../SpellCard.css";
 
 const SpellCard = ({ spell }) => {
+  const description = Array.isArray(spell.desc)
+    ? spell.desc.join(" ")
+    : spell.desc || "No description available.";
+
   return (
-    <Link to={`/spells/${spell._id}`}>
     <div className="spell-card">
       <h2>{spell.name}</h2>
-      <p>Level {spell.level} {spell.school}</p>
-      <p>Casting Time: {spell.castingTime}</p>
+      <p>Level {spell.level === 0 ? "Cantrip" : spell.level} {spell.school}</p>
+      <p>Casting Time: {spell.casting_time}</p>
       <p>Range: {spell.range}</p>
-      <p>Components: {spell.components.join(', ')}</p>
-      <p>{spell.description}</p>
+      <p>Components: {spell.components?.join(", ")}</p>
+      <p>Duration: {spell.duration}</p>
+      <p>{description}</p>
+      {spell.classes && <p>Classes: {spell.classes.join(", ")}</p>}
     </div>
-    </Link>
   );
 };
 
