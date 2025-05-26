@@ -13,9 +13,31 @@ const CharacterDetail = () => {
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
 
-    const skillToStatMap = allProficiencies.skillStatMap;
+    const skillToStatMap = {
+        "Acrobatics": "dexterity",
+        "Animal Handling": "wisdom",
+        "Arcana": "intelligence",
+        "Athletics": "strength",
+        "Deception": "charisma",
+        "History": "intelligence",
+        "Insight": "wisdom",
+        "Intimidation": "charisma",
+        "Investigation": "intelligence",
+        "Medicine": "wisdom",
+        "Nature": "intelligence",
+        "Perception": "wisdom",
+        "Performance": "charisma",
+        "Persuasion": "charisma",
+        "Religion": "intelligence",
+        "Sleight of Hand": "dexterity",
+        "Stealth": "dexterity",
+        "Survival": "wisdom"
+    };
+
 
     const getModifier = (score) => Math.floor((score - 10) / 2);
+
+    const profBonus = 3;
 
 
     useEffect(() => {
@@ -207,6 +229,14 @@ const CharacterDetail = () => {
                         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                             {list.map(prof => {
                                 const isSelected = character.proficiencies?.[type]?.includes(prof);
+                                const isSkill = type === 'skills';
+                                const statKey = isSkill ? skillToStatMap[prof] : null;
+                                const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                const totalMod = isSkill && statValue !== null
+                                    ? baseMod + (isSelected ? profBonus : 0)
+                                    : null;
+
                                 return (
                                     <li
                                         key={prof}
@@ -221,9 +251,15 @@ const CharacterDetail = () => {
                                         }}
                                     >
                                         {prof}
+                                        {isSkill && statValue !== null && (
+                                            <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
+                                                ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                            </span>
+                                        )}
                                     </li>
                                 );
                             })}
+
                         </ul>
                     </div>
                 ))
