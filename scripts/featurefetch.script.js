@@ -3,8 +3,7 @@ import fs from 'fs';
 
 const classes = [
   'barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk',
-  'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard',
-  'artificer' // Include if your app supports Artificer
+  'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'
 ];
 
 const classFeatures = {};
