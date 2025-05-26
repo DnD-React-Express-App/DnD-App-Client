@@ -18,7 +18,6 @@ function ItemDetails({ item }) {
   
         {item.type === 'Weapon' && (
           <>
-            <p><strong>Weapon Name:</strong> {item.weaponName}</p>
             <p><strong>Weapon Type:</strong> {item.weaponType}</p>
             <p><strong>Damage:</strong> {item.damageTypes?.map(d => `${d.die} ${d.type}`).join(', ')}</p>
             <p><strong>Properties:</strong> {item.weaponProperties?.join(', ')}</p>
