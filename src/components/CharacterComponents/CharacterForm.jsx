@@ -4,13 +4,14 @@ import { ItemContext } from '../../context/item.context';
 import { createCharacter, updateCharacter } from '../../services/character.service';
 import proficiencies from '../../../public/data/proficiencies.json';
 
+const spellcastingClasses = [
+    'Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard', 'Paladin', 'Ranger', 'Warlock'
+];
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
-
     const { items, isLoading } = useContext(ItemContext);
 
     const [currentTab, setCurrentTab] = useState('Basics');
-
     const [armorOptions, setArmorOptions] = useState([]);
     const [weaponOptions, setWeaponOptions] = useState([]);
     const [selectedArmor, setSelectedArmor] = useState(null);
@@ -19,7 +20,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [allClassFeatures, setAllClassFeatures] = useState({});
     const [classFeatures, setClassFeatures] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
-
+    const [classSpellLists, setClassSpellLists] = useState({});
+    const [selectedSpells, setSelectedSpells] = useState({});
 
     const [form, setForm] = useState({
         name: '',
@@ -44,6 +46,17 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         },
         ...initialData,
     });
+
+    const classOptions = [
+        'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
+        'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard',
+    ];
+
+    const raceOptions = [
+        'Human', 'Elf', 'Half-Elf', 'Dwarf', 'Halfling', 'Gnome', 'Half-Orc', 'Dragonborn',
+        'Tiefling', 'Aasimar', 'Genasi', 'Goliath', 'Tabaxi', 'Triton', 'Firbolg',
+        'Kenku', 'Lizardfolk', 'Goblin', 'Orc', 'Bugbear'
+    ];
 
     useEffect(() => {
         if (items.length > 0) {
@@ -72,15 +85,19 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         fetchClassFeatures();
     }, []);
 
-    const classOptions = [
-        'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
-        'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard',
-    ];
-    const raceOptions = [
-        'Human', 'Elf', 'Half-Elf', 'Dwarf', 'Halfling', 'Gnome', 'Half-Orc', 'Dragonborn',
-        'Tiefling', 'Aasimar', 'Genasi', 'Goliath', 'Tabaxi', 'Triton', 'Firbolg',
-        'Kenku', 'Lizardfolk', 'Goblin', 'Orc', 'Bugbear'
-    ];
+    useEffect(() => {
+        const fetchSpellLists = async () => {
+            try {
+                const res = await fetch('/data/class_spells.json');
+                const data = await res.json();
+                setClassSpellLists(data);
+            } catch (err) {
+                console.error('Failed to load class spell lists:', err);
+            }
+        };
+
+        fetchSpellLists();
+    }, []);
 
     const handleRaceChange = async (e) => {
         const selectedRace = e.target.value;
@@ -94,7 +111,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         try {
             const res = await fetch('/data/species.json');
             const speciesData = await res.json();
-
             const features = speciesData[selectedRace]?.abilities || [];
             setSpeciesFeatures(features);
         } catch (err) {
@@ -132,7 +148,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         if (!selectedClass || !allClassFeatures[selectedClass]) return;
 
         const allFeatures = allClassFeatures[selectedClass].features || [];
-
         const unlocked = allFeatures.filter(f => f.level <= selectedLevel);
         const upcoming = allFeatures.filter(f => f.level > selectedLevel);
 
@@ -140,6 +155,18 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             ...prev,
             [index]: { unlocked, upcoming }
         }));
+    };
+
+    const handleSpellToggle = (className, spellName) => {
+        setSelectedSpells(prev => {
+            const current = prev[className] || [];
+            return {
+                ...prev,
+                [className]: current.includes(spellName)
+                    ? current.filter(sp => sp !== spellName)
+                    : [...current, spellName],
+            };
+        });
     };
 
     const addClass = () => {
@@ -185,6 +212,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             const payload = {
                 ...form,
                 items: [selectedArmor, selectedWeapon].filter(Boolean),
+                spells: selectedSpells,
             };
 
             let res;
@@ -203,30 +231,32 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     };
 
     return (
-
-
         <div>
             <div className="tabs">
-                {['Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment'].map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setCurrentTab(tab)}
-                        className={currentTab === tab ? 'active' : ''}
-                    >
-                        {tab}
-                    </button>
-                ))}
+                {['Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment']
+                    .concat(form.classes.some(cls => spellcastingClasses.includes(cls.name)) ? ['Spells'] : [])
+                    .map(tab => (
+                        <button
+                            key={tab}
+                            onClick={() => setCurrentTab(tab)}
+                            className={currentTab === tab ? 'active' : ''}
+                        >
+                            {tab}
+                        </button>
+                    ))
+                }
             </div>
-
 
             <form onSubmit={handleSubmit}>
                 {currentTab === 'Class' && (
                     <>
-                        {
-                            form.classes.map((cls, index) => (
-                                <div key={index} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
+                        {form.classes.map((cls, index) => {
+                            const className = cls.name;
+                            const isSpellcaster = spellcastingClasses.includes(className);
+                            return (
+                                <div key={index} style={{ marginBottom: '2rem' }}>
                                     <select
-                                        value={cls.name}
+                                        value={className}
                                         onChange={e => handleClassChange(index, 'name', e.target.value)}
                                     >
                                         <option value="">Select Class</option>
@@ -243,7 +273,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                     />
 
                                     {classFeatures[index]?.unlocked?.length > 0 && (
-                                        <div style={{ marginTop: '0.5rem' }}>
+                                        <div>
                                             <strong>Unlocked Features:</strong>
                                             <ul>
                                                 {classFeatures[index].unlocked.map(feature => (
@@ -255,36 +285,48 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                         </div>
                                     )}
 
-                                    {classFeatures[index]?.upcoming?.length > 0 && (
-                                        <div style={{ marginTop: '0.5rem' }}>
-                                            <strong>Upcoming Features:</strong>
+                                    {form.classes.length > 1 && (
+                                        <button type="button" onClick={() => removeClass(index)}>Remove</button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        <button type="button" onClick={addClass}>+ Add Class</button>
+                    </>
+                )}
+
+                {currentTab === 'Spells' && (
+                    <>
+                        <h3>Spell Selection</h3>
+                        {form.classes
+                            .filter(cls => spellcastingClasses.includes(cls.name))
+                            .map((cls, index) => {
+                                const className = cls.name;
+                                const spells = classSpellLists[className] || [];
+                                return (
+                                    <div key={index} style={{ marginBottom: '2rem' }}>
+                                        <h4>{className}</h4>
+                                        {spells.length > 0 ? (
                                             <ul>
-                                                {classFeatures[index].upcoming.map(feature => (
-                                                    <li key={feature.name}>
-                                                        <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
+                                                {spells.map(spell => (
+                                                    <li key={spell.name}>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedSpells[className]?.includes(spell.name) || false}
+                                                                onChange={() => handleSpellToggle(className, spell.name)}
+                                                            />
+                                                            {spell.name} (Level {spell.level}, {spell.school})
+                                                        </label>
                                                     </li>
                                                 ))}
                                             </ul>
-                                        </div>
-                                    )}
-
-                                    {form.classes.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeClass(index)}
-                                            style={{ marginLeft: '0.5rem' }}
-                                            aria-label={`Remove class ${index + 1}`}
-                                        >
-                                            Remove
-                                        </button>
-                                    )}
-                                </div>
-                            ))
-                        }
-
-                        <button type="button" onClick={addClass}>
-                            + Add Class
-                        </button>
+                                        ) : (
+                                            <p>No spells found for {className}.</p>
+                                        )}
+                                    </div>
+                                );
+                            })}
                     </>
                 )}
 
@@ -295,17 +337,12 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                             value={form.name}
                             onChange={e => setForm({ ...form, name: e.target.value })}
                         />
-
-                        <select
-                            value={form.race}
-                            onChange={handleRaceChange}
-                        >
+                        <select value={form.race} onChange={handleRaceChange}>
                             <option value="">Select Race</option>
                             {raceOptions.map(r => (
                                 <option key={r} value={r}>{r}</option>
                             ))}
                         </select>
-
                         {speciesFeatures.length > 0 && (
                             <div style={{ marginTop: '1rem' }}>
                                 <strong>Racial Features:</strong>
@@ -321,10 +358,64 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     </>
                 )}
 
+                {currentTab === 'Stats' && (
+                    <>
+                        {Object.keys(form.stats).map(stat => (
+                            <div key={stat}>
+                                <label>{stat}</label>
+                                <input
+                                    type="number"
+                                    value={form.stats[stat]}
+                                    onChange={e => handleStatChange(stat, e.target.value)}
+                                />
+                            </div>
+                        ))}
+                    </>
+                )}
+
+                {currentTab === 'Background' && (
+                    <>
+                        <label>Select Background:</label>
+                        <select
+                            value={form.background}
+                            onChange={e => setForm({ ...form, background: e.target.value })}
+                        >
+                            <option value="">-- Select Background --</option>
+                            <option value="Acolyte">Acolyte</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Folk Hero">Folk Hero</option>
+                            <option value="Noble">Noble</option>
+                            <option value="Outlander">Outlander</option>
+                            <option value="Sage">Sage</option>
+                            <option value="Soldier">Soldier</option>
+                        </select>
+
+                        {backgroundFeatures.length > 0 && (
+                            <div style={{ marginTop: '1rem' }}>
+                                <strong>Background Features:</strong>
+                                <ul>
+                                    {backgroundFeatures.map((feature, idx) => (
+                                        <li key={feature._id || feature.name || idx}>
+                                            <strong>{feature.name}</strong>: {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        <textarea
+                            placeholder="Enter backstory"
+                            value={form.backstory}
+                            onChange={e => setForm({ ...form, backstory: e.target.value })}
+                            rows={5}
+                            style={{ width: '100%', marginTop: '1rem' }}
+                        />
+                    </>
+                )}
+
                 {currentTab === 'Proficiencies' && (
                     <>
                         <h3>Proficiencies</h3>
-
                         {Object.entries(proficiencies).map(([type, list]) => (
                             <div key={type} style={{ marginBottom: '1rem' }}>
                                 <h4>{type.charAt(0).toUpperCase() + type.slice(1)}</h4>
@@ -355,26 +446,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     </>
                 )}
 
-
-
-                {currentTab === 'Stats' && (
-                    <>
-                        <div>
-                            {Object.keys(form.stats).map(stat => (
-                                <div key={stat}>
-                                    <label>{stat}</label>
-                                    <input
-                                        type="number"
-                                        value={form.stats[stat]}
-                                        onChange={e => handleStatChange(stat, e.target.value)}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                )}
-
-                {currentTab === "Equipment" && (
+                {currentTab === 'Equipment' && (
                     <>
                         <label>Select Armor:</label>
                         <select
@@ -401,47 +473,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                 </option>
                             ))}
                         </select>
-                    </>
-                )}
-
-                {currentTab === 'Background' && (
-                    <>
-                        <label>Select Background:</label>
-                        <select
-                            value={form.background}
-                            onChange={e => setForm({ ...form, background: e.target.value })}
-                        >
-                            <option value="">-- Select Background --</option>
-                            <option value="Acolyte">Acolyte</option>
-                            <option value="Criminal">Criminal</option>
-                            <option value="Folk Hero">Folk Hero</option>
-                            <option value="Noble">Noble</option>
-                            <option value="Outlander">Outlander</option>
-                            <option value="Sage">Sage</option>
-                            <option value="Soldier">Soldier</option>
-                            {/* Add more if you support them */}
-                        </select>
-
-                        {backgroundFeatures.length > 0 && (
-                            <div style={{ marginTop: '1rem' }}>
-                                <strong>Background Features:</strong>
-                                <ul>
-                                    {backgroundFeatures.map((feature, idx) => (
-                                        <li key={feature._id || feature.name || idx}>
-                                            <strong>{feature.name}</strong>: {feature.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        <textarea
-                            placeholder="Enter backstory"
-                            value={form.backstory}
-                            onChange={e => setForm({ ...form, backstory: e.target.value })}
-                            rows={5}
-                            style={{ width: '100%', marginTop: '1rem' }}
-                        />
                     </>
                 )}
 
