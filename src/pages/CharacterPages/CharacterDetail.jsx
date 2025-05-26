@@ -10,6 +10,9 @@ const CharacterDetail = () => {
     const [character, setCharacter] = useState(null);
     const [loading, setLoading] = useState(true);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
+    const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
+    const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -45,6 +48,53 @@ const CharacterDetail = () => {
 
         fetchSpeciesFeatures();
     }, [character?.race]);
+
+    useEffect(() => {
+        const fetchClassFeatures = async () => {
+            if (!character?.classes?.length) return;
+
+            try {
+                const res = await fetch('/data/classes.json');
+                const classData = await res.json();
+
+                const features = {};
+
+                for (const cls of character.classes) {
+                    const allFeatures = classData[cls.name]?.features || [];
+                    const unlocked = allFeatures.filter(f => f.level <= cls.level);
+                    const upcoming = allFeatures.filter(f => f.level > cls.level);
+
+                    features[cls.name] = { unlocked, upcoming };
+                }
+
+                setClassFeaturesByClass(features);
+            } catch (err) {
+                console.error('Failed to load class features:', err);
+            }
+        };
+
+        fetchClassFeatures();
+    }, [character?.classes]);
+
+    useEffect(() => {
+        const fetchBackgroundFeatures = async () => {
+            if (!character?.background) return;
+
+            try {
+                const res = await fetch('/data/backgrounds.json');
+                const backgroundData = await res.json();
+
+                const features = backgroundData[character.background]?.features || [];
+                setBackgroundFeatures(features);
+            } catch (err) {
+                console.error('Failed to load background features:', err);
+                setBackgroundFeatures([]);
+            }
+        };
+
+        fetchBackgroundFeatures();
+    }, [character?.background]);
+
 
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this character?')) {
@@ -83,7 +133,37 @@ const CharacterDetail = () => {
             <h2>Classes</h2>
             <ul>
                 {character.classes.map((cls, i) => (
-                    <li key={i}>{cls.name} (Level {cls.level})</li>
+                    <li key={i}>
+                        <strong>{cls.name}</strong> (Level {cls.level})
+                        {classFeaturesByClass[cls.name] && (
+                            <div style={{ marginLeft: '1rem' }}>
+                                {classFeaturesByClass[cls.name].unlocked.length > 0 && (
+                                    <>
+                                        <strong>Unlocked Features:</strong>
+                                        <ul>
+                                            {classFeaturesByClass[cls.name].unlocked.map(f => (
+                                                <li key={f.name}>
+                                                    <strong>{f.name}</strong> (Lv {f.level}): {f.description}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                                {classFeaturesByClass[cls.name].upcoming.length > 0 && (
+                                    <>
+                                        <strong>Upcoming Features:</strong>
+                                        <ul>
+                                            {classFeaturesByClass[cls.name].upcoming.map(f => (
+                                                <li key={f.name}>
+                                                    <strong>{f.name}</strong> (Lv {f.level}): {f.description}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </li>
                 ))}
             </ul>
 
@@ -141,6 +221,25 @@ const CharacterDetail = () => {
 
 
             <h2>Backstory</h2>
+            {character.background && (
+                <>
+                    <h2>Background</h2>
+                    <p><strong>{character.background}</strong></p>
+
+                    {backgroundFeatures.length > 0 && (
+                        <>
+                            <h3>Background Features</h3>
+                            <ul>
+                                {backgroundFeatures.map((feature, index) => (
+                                    <li key={feature._id || feature.name || index}>
+                                        <strong>{feature.name}:</strong> {feature.description}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </>
+            )}
             <p>{character.backstory || <em>No backstory provided</em>}</p>
 
             <button onClick={(e) => {

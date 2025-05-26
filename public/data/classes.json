@@ -1,0 +1,30 @@
+{
+  "Barbarian": {
+    "features": [
+      {
+        "name": "Rage",
+        "description": "Gain advantage on Strength checks and saves, plus bonus damage.",
+        "level": 1
+      },
+      {
+        "name": "Reckless Attack",
+        "description": "Gain advantage on melee attacks using Strength on your turn.",
+        "level": 2
+      }
+    ]
+  },
+  "Bard": {
+    "features": [
+      {
+        "name": "Bardic Inspiration",
+        "description": "Give an inspiration die to an ally within 60 feet.",
+        "level": 1
+      },
+      {
+        "name": "Jack of All Trades",
+        "description": "Add half proficiency bonus to ability checks not already proficient.",
+        "level": 2
+      }
+    ]
+  }
+}

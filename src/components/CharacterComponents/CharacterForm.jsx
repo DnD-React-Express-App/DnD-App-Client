@@ -16,6 +16,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedArmor, setSelectedArmor] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
+    const [allClassFeatures, setAllClassFeatures] = useState({});
+    const [classFeatures, setClassFeatures] = useState({});
+    const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+
 
     const [form, setForm] = useState({
         name: '',
@@ -30,6 +34,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         },
         classes: [{ name: '', level: 1 }],
         level: 1,
+        background: '',
         backstory: '',
         proficiencies: {
             skills: [],
@@ -52,6 +57,20 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             setForm({ ...form, ...initialData });
         }
     }, [initialData]);
+
+    useEffect(() => {
+        const fetchClassFeatures = async () => {
+            try {
+                const res = await fetch('/data/classes.json');
+                const data = await res.json();
+                setAllClassFeatures(data);
+            } catch (err) {
+                console.error('Failed to load class features:', err);
+            }
+        };
+
+        fetchClassFeatures();
+    }, []);
 
     const classOptions = [
         'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
@@ -104,7 +123,23 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             }
             return cls;
         });
+
         setForm(prev => ({ ...prev, classes: updatedClasses }));
+
+        const selectedClass = field === 'name' ? value : updatedClasses[index].name;
+        const selectedLevel = field === 'level' ? Number(value) : updatedClasses[index].level;
+
+        if (!selectedClass || !allClassFeatures[selectedClass]) return;
+
+        const allFeatures = allClassFeatures[selectedClass].features || [];
+
+        const unlocked = allFeatures.filter(f => f.level <= selectedLevel);
+        const upcoming = allFeatures.filter(f => f.level > selectedLevel);
+
+        setClassFeatures(prev => ({
+            ...prev,
+            [index]: { unlocked, upcoming }
+        }));
     };
 
     const addClass = () => {
@@ -120,6 +155,27 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             classes: prev.classes.filter((_, i) => i !== index)
         }));
     };
+
+    useEffect(() => {
+        const fetchBackgroundFeatures = async () => {
+            if (!form.background) {
+                setBackgroundFeatures([]);
+                return;
+            }
+
+            try {
+                const res = await fetch('/data/backgrounds.json');
+                const backgroundsData = await res.json();
+                const features = backgroundsData[form.background]?.features || [];
+                setBackgroundFeatures(features);
+            } catch (err) {
+                console.error('Failed to load background features:', err);
+                setBackgroundFeatures([]);
+            }
+        };
+
+        fetchBackgroundFeatures();
+    }, [form.background]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -185,6 +241,32 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                         placeholder="Class Level"
                                         style={{ width: '80px', marginLeft: '0.5rem' }}
                                     />
+
+                                    {classFeatures[index]?.unlocked?.length > 0 && (
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <strong>Unlocked Features:</strong>
+                                            <ul>
+                                                {classFeatures[index].unlocked.map(feature => (
+                                                    <li key={feature.name}>
+                                                        <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {classFeatures[index]?.upcoming?.length > 0 && (
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <strong>Upcoming Features:</strong>
+                                            <ul>
+                                                {classFeatures[index].upcoming.map(feature => (
+                                                    <li key={feature.name}>
+                                                        <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
 
                                     {form.classes.length > 1 && (
                                         <button
@@ -324,6 +406,35 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
                 {currentTab === 'Background' && (
                     <>
+                        <label>Select Background:</label>
+                        <select
+                            value={form.background}
+                            onChange={e => setForm({ ...form, background: e.target.value })}
+                        >
+                            <option value="">-- Select Background --</option>
+                            <option value="Acolyte">Acolyte</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Folk Hero">Folk Hero</option>
+                            <option value="Noble">Noble</option>
+                            <option value="Outlander">Outlander</option>
+                            <option value="Sage">Sage</option>
+                            <option value="Soldier">Soldier</option>
+                            {/* Add more if you support them */}
+                        </select>
+
+                        {backgroundFeatures.length > 0 && (
+                            <div style={{ marginTop: '1rem' }}>
+                                <strong>Background Features:</strong>
+                                <ul>
+                                    {backgroundFeatures.map((feature, idx) => (
+                                        <li key={feature._id || feature.name || idx}>
+                                            <strong>{feature.name}</strong>: {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
                         <textarea
                             placeholder="Enter backstory"
                             value={form.backstory}
