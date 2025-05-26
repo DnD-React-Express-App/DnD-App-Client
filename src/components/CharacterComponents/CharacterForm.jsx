@@ -42,6 +42,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             weapons: [],
             tools: []
         },
+        expertise: [],
         ...initialData,
     });
 
@@ -156,6 +157,19 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }));
     };
 
+    const getExpertiseSlots = () => {
+        return form.classes.reduce((total, cls) => {
+            if (cls.name === 'Rogue') {
+                if (cls.level >= 6) return total + 4;
+                if (cls.level >= 1) return total + 2;
+            }
+            if (cls.name === 'Bard' && cls.level >= 3) {
+                return total + 2;
+            }
+            return total;
+        }, 0);
+    };
+
     useEffect(() => {
         const fetchBackgroundFeatures = async () => {
             if (!form.background) {
@@ -255,12 +269,12 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                         </div>
                                     )}
 
-                                    {classFeatures[index]?.upcoming?.length > 0 && (
+                                    {classFeatures[index]?.unlocked?.length > 0 && (
                                         <div style={{ marginTop: '0.5rem' }}>
-                                            <strong>Upcoming Features:</strong>
+                                            <strong>Unlocked Features:</strong>
                                             <ul>
-                                                {classFeatures[index].upcoming.map(feature => (
-                                                    <li key={feature.name}>
+                                                {classFeatures[index].unlocked.map((feature, idx) => (
+                                                    <li key={`${feature.name}-${feature.level}-${idx}`}>
                                                         <strong>{feature.name}</strong> (Level {feature.level}): {feature.description}
                                                     </li>
                                                 ))}
@@ -352,6 +366,36 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                 ))}
                             </div>
                         ))}
+
+                        {getExpertiseSlots() > 0 && (
+                            <>
+                                <h3>Expertise (Select up to {getExpertiseSlots()}):</h3>
+                                {proficiencies.skills.concat(proficiencies.tools).map((option) => (
+                                    form.proficiencies.skills.includes(option) || form.proficiencies.tools.includes(option) ? (
+                                        <label key={option} style={{ display: 'block' }}>
+                                            <input
+                                                type="checkbox"
+                                                value={option}
+                                                checked={form.expertise.includes(option)}
+                                                disabled={
+                                                    !form.expertise.includes(option) && form.expertise.length >= getExpertiseSlots()
+                                                }
+                                                onChange={(e) => {
+                                                    const isChecked = e.target.checked;
+                                                    setForm(prev => ({
+                                                        ...prev,
+                                                        expertise: isChecked
+                                                            ? [...prev.expertise, option]
+                                                            : prev.expertise.filter(i => i !== option)
+                                                    }));
+                                                }}
+                                            />
+                                            {option}
+                                        </label>
+                                    ) : null
+                                ))}
+                            </>
+                        )}
                     </>
                 )}
 

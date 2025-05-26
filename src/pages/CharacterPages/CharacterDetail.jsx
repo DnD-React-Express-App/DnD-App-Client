@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteCharacter, getCharacterById } from '../../services/character.service';
 import allProficiencies from '../../../public/data/proficiencies.json';
-
+import {
+    getModifier,
+    getProficiencyBonus,
+    getTotalLevel,
+    skillToStatMap,
+    getWeaponAttackBonus
+} from '../../utils/characterUtils';
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -12,41 +18,6 @@ const CharacterDetail = () => {
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
-
-
-
-    const skillToStatMap = {
-        "Acrobatics": "dexterity",
-        "Animal Handling": "wisdom",
-        "Arcana": "intelligence",
-        "Athletics": "strength",
-        "Deception": "charisma",
-        "History": "intelligence",
-        "Insight": "wisdom",
-        "Intimidation": "charisma",
-        "Investigation": "intelligence",
-        "Medicine": "wisdom",
-        "Nature": "intelligence",
-        "Perception": "wisdom",
-        "Performance": "charisma",
-        "Persuasion": "charisma",
-        "Religion": "intelligence",
-        "Sleight of Hand": "dexterity",
-        "Stealth": "dexterity",
-        "Survival": "wisdom"
-    };
-
-
-    const getModifier = (score) => Math.floor((score - 10) / 2);
-
-    const getProficiencyBonus = (level) => {
-        if (level >= 17) return 6;
-        if (level >= 13) return 5;
-        if (level >= 9) return 4;
-        if (level >= 5) return 3;
-        return 2;
-      };
-
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -129,7 +100,6 @@ const CharacterDetail = () => {
         fetchBackgroundFeatures();
     }, [character?.background]);
 
-
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this character?')) {
             try {
@@ -145,7 +115,7 @@ const CharacterDetail = () => {
     if (loading) return <p>Loading character...</p>;
     if (!character) return <p>Character not found</p>;
 
-    const totalLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0);
+    const totalLevel = getTotalLevel(character.classes);
     const profBonus = getProficiencyBonus(totalLevel);
 
     return (
@@ -179,7 +149,7 @@ const CharacterDetail = () => {
                                         <strong>Unlocked Features:</strong>
                                         <ul>
                                             {classFeaturesByClass[cls.name].unlocked.map(f => (
-                                                <li key={f.name}>
+                                                <li key={`${f.name}-${f.level}`}>
                                                     <strong>{f.name}</strong> (Lv {f.level}): {f.description}
                                                 </li>
                                             ))}
@@ -191,7 +161,7 @@ const CharacterDetail = () => {
                                         <strong>Upcoming Features:</strong>
                                         <ul>
                                             {classFeaturesByClass[cls.name].upcoming.map(f => (
-                                                <li key={f.name}>
+                                                <li key={`${f.name}-${f.level}`}>
                                                     <strong>{f.name}</strong> (Lv {f.level}): {f.description}
                                                 </li>
                                             ))}
@@ -210,6 +180,11 @@ const CharacterDetail = () => {
                     {character.items.map((item) => (
                         <li key={item._id}>
                             <strong>{item.name}</strong> ({item.type})
+                            {item.type === 'Weapon' && (
+                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                    Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                </span>
+                            )}
                         </li>
                     ))}
                 </ul>
@@ -244,8 +219,9 @@ const CharacterDetail = () => {
                                 const statKey = isSkill ? skillToStatMap[prof] : null;
                                 const statValue = isSkill && statKey ? character.stats[statKey] : null;
                                 const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                const hasExpertise = character.expertise?.includes(prof);
                                 const totalMod = isSkill && statValue !== null
-                                    ? baseMod + (isSelected ? profBonus : 0)
+                                    ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
                                     : null;
 
                                 return (
@@ -270,14 +246,12 @@ const CharacterDetail = () => {
                                     </li>
                                 );
                             })}
-
                         </ul>
                     </div>
                 ))
             ) : (
                 <p><em>No proficiencies selected.</em></p>
             )}
-
 
             <h2>Backstory</h2>
             {character.background && (
