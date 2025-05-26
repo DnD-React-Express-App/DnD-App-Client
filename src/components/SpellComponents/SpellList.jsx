@@ -75,7 +75,6 @@ const SpellList = () => {
             <option value="Sorcerer">Sorcerer</option>
             <option value="Warlock">Warlock</option>
             <option value="Wizard">Wizard</option>
-            <option value="Artificer">Artificer</option>
           </select>
         </label>
 
