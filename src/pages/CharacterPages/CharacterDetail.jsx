@@ -13,6 +13,10 @@ const CharacterDetail = () => {
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
 
+    const skillToStatMap = allProficiencies.skillStatMap;
+
+    const getModifier = (score) => Math.floor((score - 10) / 2);
+
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -182,9 +186,17 @@ const CharacterDetail = () => {
 
             <h2>Stats</h2>
             <ul>
-                {Object.entries(character.stats).map(([stat, value]) => (
-                    <li key={stat}><strong>{stat}:</strong> {value}</li>
-                ))}
+                {Object.entries(character.stats).map(([stat, value]) => {
+                    const mod = getModifier(value);
+                    return (
+                        <li key={stat}>
+                            <strong>{stat.toUpperCase()}:</strong> {value}
+                            <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                ({mod >= 0 ? '+' : ''}{mod})
+                            </span>
+                        </li>
+                    );
+                })}
             </ul>
 
             <h2>Proficiencies</h2>
