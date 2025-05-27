@@ -7,7 +7,8 @@ import {
     getProficiencyBonus,
     getTotalLevel,
     skillToStatMap,
-    getWeaponAttackBonus
+    getWeaponAttackBonus,
+    getArmorClass
 } from '../../utils/characterUtils';
 
 const CharacterDetail = () => {
@@ -174,7 +175,7 @@ const CharacterDetail = () => {
                 ))}
             </ul>
 
-            <h3>Items</h3>
+            <h3>Equipment</h3>
             {character.items?.length ? (
                 <ul>
                     {character.items.map((item) => (
@@ -191,6 +192,9 @@ const CharacterDetail = () => {
             ) : (
                 <p>No items equipped.</p>
             )}
+
+            <h2>Defense</h2>
+            <p><strong>AC:</strong> {getArmorClass(character)}</p>
 
             <h2>Stats</h2>
             <ul>

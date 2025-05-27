@@ -77,8 +77,37 @@ export function getWeaponAttackBonus(character, weapon) {
     const isProficient =
         proficiencies.includes(`${weapon.weaponClass} Weapons`) ||
         proficiencies.includes(weapon.weaponType) ||
-        proficiencies.includes(weapon.name); 
+        proficiencies.includes(weapon.name);
 
     return statMod + (isProficient ? profBonus : 0);
 }
+
+export function getArmorClass(character) {
+    const dexMod = getModifier(character.stats?.dexterity || 10);
+    const items = character.items || [];
+
+    const armor = items.find(item => item.type === 'Armor' && item.armorCategory !== 'Shield');
+    const shield = items.find(item => item.type === 'Armor' && item.armorCategory === 'Shield');
+
+    let baseAC = 10; 
+    let maxDexBonus = null;
+    let dexApplies = true;
+
+    if (armor) {
+        baseAC = armor.baseAC || baseAC;
+        dexApplies = armor.dexModifierApplies ?? true;
+        maxDexBonus = armor.maxDexBonus ?? null;
+    }
+
+    let totalDex = 0;
+    if (dexApplies) {
+        totalDex = maxDexBonus != null ? Math.min(dexMod, maxDexBonus) : dexMod;
+    }
+
+    let shieldBonus = shield?.acBonus || 0;
+
+    return baseAC + totalDex + shieldBonus;
+}
+
+
 

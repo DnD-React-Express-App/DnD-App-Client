@@ -8,7 +8,6 @@ function ItemDetails({ item }) {
   
         {item.type === 'Armor' && (
           <>
-            <p><strong>Armor Name:</strong> {item.armorName}</p>
             <p><strong>Base AC:</strong> {item.armorClassBase}</p>
             <p><strong>Dex Modifier:</strong> {item.usesDexModifier ? 'Yes' : 'No'}</p>
             {item.dexModifierCap !== null && <p><strong>Dex Cap:</strong> {item.dexModifierCap}</p>}
