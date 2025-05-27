@@ -9,7 +9,12 @@ import BackgroundTab from './CharacterTabs/BackgroundTab';
 import SpellTab from './CharacterTabs/SpellTab';
 import EquipmentTab from './CharacterTabs/EquipmentTab';
 import ProficienciesTab from './CharacterTabs/ProficienciesTab';
-import { getClassBasedProficiencies } from '../../utils/characterUtils';
+import {
+    addClass,
+    removeClass,
+    getMaxSpellLevel,
+    getClassBasedProficiencies
+} from '../../utils/characterUtils';
 
 const raceOptions = [
     'Human',
@@ -51,40 +56,29 @@ const halfCasters = ['Paladin', 'Ranger'];
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const { items } = useContext(ItemContext);
 
-    const [currentTab, setCurrentTab] = useState('Class');
+    const [currentTab, setCurrentTab] = useState('Basics');
     const [armorOptions, setArmorOptions] = useState([]);
     const [weaponOptions, setWeaponOptions] = useState([]);
     const [selectedArmor, setSelectedArmor] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [allClassFeatures, setAllClassFeatures] = useState({});
-    const [classFeatures, setClassFeatures] = useState({});
+    const [allSubclassFeatures, setAllSubclassFeatures] = useState({});
+    const [classBasedProficiencies, setClassBasedProficiencies] = useState({ armor: [], weaponCategories: [], namedWeapons: [] });
+    const [classFeatures, setClassFeatures] = useState([]);
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
     const [classSpellLists, setClassSpellLists] = useState({});
     const [selectedSpells, setSelectedSpells] = useState({});
-    const [classBasedProficiencies, setClassBasedProficiencies] = useState({ armor: [], weaponCategories: [], namedWeapons: [] });
 
     const [form, setForm] = useState({
         name: '',
         race: '',
-        stats: {
-            strength: 10,
-            dexterity: 10,
-            constitution: 10,
-            intelligence: 10,
-            wisdom: 10,
-            charisma: 10,
-        },
-        classes: [{ name: '', level: 1 }],
+        stats: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+        classes: [{ name: '', level: 1, subclass: '' }],
         level: 1,
         background: '',
         backstory: '',
-        proficiencies: {
-            skills: [],
-            armor: [],
-            weapons: [],
-            tools: []
-        },
+        proficiencies: { skills: [], armor: [], weapons: [], tools: [] },
         expertise: [],
         ...initialData,
     });
@@ -97,10 +91,20 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     }, [items]);
 
     useEffect(() => {
+        if (initialData?.items?.length) {
+            const armor = initialData.items.find(i => i.type === 'Armor' && i.armorCategory !== 'Shield');
+            const weapon = initialData.items.find(i => i.type === 'Weapon');
+            setSelectedArmor(armor || null);
+            setSelectedWeapon(weapon || null);
+        }
+    }, [initialData]);
+
+    useEffect(() => {
         (async () => {
             try {
                 const res = await fetch('/data/classes.json');
-                setAllClassFeatures(await res.json());
+                const data = await res.json();
+                setAllClassFeatures(data);
             } catch (err) {
                 console.error('Failed to load class features:', err);
             }
@@ -111,9 +115,22 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         (async () => {
             try {
                 const res = await fetch('/data/class_spells.json');
-                setClassSpellLists(await res.json());
+                const data = await res.json();
+                setClassSpellLists(data);
             } catch (err) {
-                console.error('Failed to load class spell lists:', err);
+                console.error('Failed to load class spells:', err);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await fetch('/data/subclass_features.json');
+                const data = await res.json();
+                setAllSubclassFeatures(data);
+            } catch (err) {
+                console.error('Failed to load subclass features:', err);
             }
         })();
     }, []);
@@ -127,7 +144,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 setBackgroundFeatures(data[form.background]?.features || []);
             } catch (err) {
                 console.error('Failed to load background features:', err);
-                setBackgroundFeatures([]);
             }
         })();
     }, [form.background]);
@@ -136,6 +152,56 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         setClassBasedProficiencies(getClassBasedProficiencies(form.classes || []));
     }, [form.classes]);
 
+    const handleClassChange = (index, field, value) => {
+        const updatedClasses = [...form.classes];
+        updatedClasses[index] = {
+            ...updatedClasses[index],
+            [field]: field === 'level' ? Number(value) : value,
+        };
+        if (field === 'name') updatedClasses[index].subclass = '';
+
+        setForm(prev => ({ ...prev, classes: updatedClasses }));
+
+        const cls = updatedClasses[index];
+        const features = allClassFeatures[cls.name]?.features || [];
+        const unlocked = features.filter(f => f.level <= cls.level);
+        const upcoming = features.filter(f => f.level > cls.level);
+
+        let subclassUnlocked = [];
+        let subclassUpcoming = [];
+        if (cls.subclass && allSubclassFeatures[cls.name]?.[cls.subclass]) {
+            const subclassFeatures = allSubclassFeatures[cls.name][cls.subclass];
+            subclassUnlocked = subclassFeatures.filter(f => f.level <= cls.level);
+            subclassUpcoming = subclassFeatures.filter(f => f.level > cls.level);
+        }
+
+        setClassFeatures(prev => {
+            const updated = [...prev];
+            updated[index] = { unlocked, upcoming, subclassUnlocked, subclassUpcoming };
+            return updated;
+        });
+    };
+
+    const handleSubclassChange = (index, subclassName) => {
+        const updatedClasses = [...form.classes];
+        updatedClasses[index].subclass = subclassName;
+        setForm(prev => ({ ...prev, classes: updatedClasses }));
+
+        const cls = updatedClasses[index];
+        const subclassFeatures = allSubclassFeatures[cls.name]?.[subclassName] || [];
+        const subclassUnlocked = subclassFeatures.filter(f => f.level <= cls.level);
+        const subclassUpcoming = subclassFeatures.filter(f => f.level > cls.level);
+
+        setClassFeatures(prev => {
+            const updated = [...prev];
+            updated[index] = {
+                ...updated[index],
+                subclassUnlocked,
+                subclassUpcoming,
+            };
+            return updated;
+        });
+    };
 
     const handleRaceChange = async (e) => {
         const selectedRace = e.target.value;
@@ -147,58 +213,14 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             setSpeciesFeatures(data[selectedRace]?.abilities || []);
         } catch (err) {
             console.error('Failed to load species data:', err);
-            setSpeciesFeatures([]);
         }
     };
 
     const handleStatChange = (stat, value) => {
         setForm(prev => ({
             ...prev,
-            stats: {
-                ...prev.stats,
-                [stat]: Number(value)
-            }
+            stats: { ...prev.stats, [stat]: Number(value) }
         }));
-    };
-
-    const getMaxSpellLevel = (casterType, classLevel) => {
-        if (classLevel < 1) return 0;
-
-        if (casterType === 'full') {
-            if (classLevel >= 17) return 9;
-            if (classLevel >= 15) return 8;
-            if (classLevel >= 13) return 7;
-            if (classLevel >= 11) return 6;
-            if (classLevel >= 9) return 5;
-            if (classLevel >= 7) return 4;
-            if (classLevel >= 5) return 3;
-            if (classLevel >= 3) return 2;
-            return 1;
-        }
-
-        if (casterType === 'half') {
-            if (classLevel >= 17) return 5;
-            if (classLevel >= 13) return 4;
-            if (classLevel >= 9) return 3;
-            if (classLevel >= 5) return 2;
-            if (classLevel >= 2) return 1;
-        }
-
-        return 0;
-    };
-
-    const handleClassChange = (index, field, value) => {
-        const updatedClasses = form.classes.map((cls, i) => i === index ? { ...cls, [field]: field === 'level' ? Number(value) : value } : cls);
-        setForm(prev => ({ ...prev, classes: updatedClasses }));
-
-        const selectedClass = field === 'name' ? value : updatedClasses[index].name;
-        const selectedLevel = field === 'level' ? Number(value) : updatedClasses[index].level;
-        if (!selectedClass || !allClassFeatures[selectedClass]) return;
-
-        const features = allClassFeatures[selectedClass]?.features || [];
-        const unlocked = features.filter(f => f.level <= selectedLevel);
-        const upcoming = features.filter(f => f.level > selectedLevel);
-        setClassFeatures(prev => ({ ...prev, [index]: { unlocked, upcoming } }));
     };
 
     const handleSpellToggle = (className, spellName) => {
@@ -223,10 +245,9 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 proficiencies: {
                     ...form.proficiencies,
                     armor: classBasedProficiencies.armor,
-                    weapons: [...classBasedProficiencies.weaponCategories, ...classBasedProficiencies.namedWeapons]
+                    weapons: [...classBasedProficiencies.weaponCategories, ...classBasedProficiencies.namedWeapons],
                 }
             };
-
             const res = form._id ? await updateCharacter(form._id, payload) : await createCharacter(payload);
             if (onSuccess) onSuccess(res.data);
             alert(`Character ${form._id ? 'updated' : 'created'}!`);
@@ -236,20 +257,21 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }
     };
 
-
     return (
         <div>
             <div className="tabs">
-                {['Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment',
-                    ...(form.classes.some(cls => spellcastingClasses.includes(cls.name)) ? ['Spells'] : [])].map(tab => (
-                        <button
-                            key={tab}
-                            onClick={() => setCurrentTab(tab)}
-                            className={currentTab === tab ? 'active' : ''}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+                {[
+                    'Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment',
+                    ...(form.classes.some(cls => spellcastingClasses.includes(cls.name)) ? ['Spells'] : [])
+                ].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setCurrentTab(tab)}
+                        className={currentTab === tab ? 'active' : ''}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
             <form onSubmit={handleSubmit}>
@@ -257,11 +279,26 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     <ClassTab
                         form={form}
                         classOptions={classOptions}
+                        allSubclassFeatures={allSubclassFeatures}
                         spellcastingClasses={spellcastingClasses}
                         classFeatures={classFeatures}
                         handleClassChange={handleClassChange}
-                        addClass={() => setForm(prev => ({ ...prev, classes: [...prev.classes, { name: '', level: 1 }] }))}
-                        removeClass={index => setForm(prev => ({ ...prev, classes: prev.classes.filter((_, i) => i !== index) }))}
+                        handleSubclassChange={handleSubclassChange}
+                        removeClass={removeClass}
+                        addClass={addClass}
+                    />
+                )}
+
+                {currentTab === 'Spells' && (
+                    <SpellTab
+                        classes={form.classes}
+                        spellcastingClasses={spellcastingClasses}
+                        classSpellLists={classSpellLists}
+                        fullCasters={fullCasters}
+                        halfCasters={halfCasters}
+                        getMaxSpellLevel={getMaxSpellLevel}
+                        selectedSpells={selectedSpells}
+                        handleSpellToggle={handleSpellToggle}
                     />
                 )}
 
@@ -282,10 +319,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 {currentTab === 'Background' && (
                     <BackgroundTab
                         background={form.background}
-                        setBackground={val => setForm(prev => ({ ...prev, background: val }))}
+                        setBackground={value => setForm({ ...form, background: value })}
                         backgroundFeatures={backgroundFeatures}
                         backstory={form.backstory}
-                        setBackstory={val => setForm(prev => ({ ...prev, backstory: val }))}
+                        setBackstory={value => setForm({ ...form, backstory: value })}
                     />
                 )}
 

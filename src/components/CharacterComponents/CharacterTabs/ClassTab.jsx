@@ -1,68 +1,123 @@
 import React from 'react';
 
 const ClassTab = ({
-  form,
-  classOptions,
-  spellcastingClasses,
-  classFeatures,
-  handleClassChange,
-  removeClass,
-  addClass,
+    form,
+    classOptions,
+    classFeatures,
+    allSubclassFeatures,
+    handleClassChange,
+    handleSubclassChange,
+    removeClass,
+    addClass,
 }) => {
-  return (
-    <>
-      {form.classes.map((cls, index) => {
-        const className = cls.name;
-        return (
-          <div key={index} style={{ marginBottom: '2rem' }}>
-            <select
-              value={className || ''}
-              onChange={e => handleClassChange(index, 'name', e.target.value)}
-            >
-              <option value="">Select Class</option>
-              {classOptions.map(c => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+    return (
+        <div>
+            {form.classes.map((cls, index) => {
+                const className = cls.name;
+                const classLevel = cls.level;
+                const subclassName = cls.subclass || '';
 
-            <input
-              type="number"
-              min="1"
-              value={cls.level}
-              onChange={e => handleClassChange(index, 'level', e.target.value)}
-              placeholder="Class Level"
-              style={{ width: '80px', marginLeft: '0.5rem' }}
-            />
+                console.log(subclassName)
+                const selectedSubclass = subclassName
+                    ? allSubclassFeatures?.[className]?.[subclassName] ?? null
+                    : null;
 
-            {classFeatures[index]?.unlocked?.length > 0 && (
-              <div>
-                <strong>Unlocked Features:</strong>
-                <ul>
-                  {classFeatures[index].unlocked.map(feature => (
-                    <li key={feature.name}>
-                      <strong>{feature.name}</strong> (Level {feature.level}):{' '}
-                      {feature.description}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                const unlocked = classFeatures[index]?.unlocked || [];
 
-            {form.classes.length > 1 && (
-              <button type="button" onClick={() => removeClass(index)}>
-                Remove
-              </button>
-            )}
-          </div>
-        );
-      })}
-      <button type="button" onClick={addClass}>
-        + Add Class
-      </button>
-    </>
-  );
+                console.log(allSubclassFeatures)
+
+                const subclassUnlocked =
+                    selectedSubclass?.features?.filter((feat) => feat.level <= classLevel) || [];
+
+                const subclassOptions = className && allSubclassFeatures?.[className]
+                    ? Object.keys(allSubclassFeatures[className])
+                    : [];
+
+                return (
+                    <div key={index}>
+                        <select
+                            value={className}
+                            onChange={(e) => handleClassChange(index, 'name', e.target.value)}
+                        >
+                            <option value="">Select Class</option>
+                            {classOptions.map((c) => (
+                                <option key={c} value={c}>
+                                    {c}
+                                </option>
+                            ))}
+                        </select>
+
+                        <input
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={classLevel}
+                            onChange={(e) =>
+                                handleClassChange(index, 'level', parseInt(e.target.value) || 1)
+                            }
+                            placeholder="Class Level"
+                        />
+
+                        {subclassOptions.length > 0 ? (
+                            <select
+                                value={subclassName}
+                                onChange={(e) => handleSubclassChange(index, e.target.value)}
+                            >
+                                <option value="">Select Subclass</option>
+                                {subclassOptions.map((sub) => (
+                                    <option key={sub} value={sub}>
+                                        {sub} ({allSubclassFeatures[className][sub].subclass_flavor})
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            className && <p>No subclass options for {className}</p>
+                        )}
+
+                        {form.classes.length > 1 && (
+                            <button type="button" onClick={() => removeClass(index)}>
+                                Remove
+                            </button>
+                        )}
+
+                        {unlocked.length > 0 && (
+                            <div>
+                                <h4>Unlocked Class Features:</h4>
+                                <ul>
+                                    {unlocked.map((feature) => (
+                                        <li key={feature.name}>
+                                            <strong>{feature.name}</strong> (Level {feature.level}):{' '}
+                                            {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {subclassUnlocked.length > 0 && (
+                            <div>
+                                <h4>Unlocked Subclass Features:</h4>
+                                <ul>
+                                    {subclassUnlocked.map((feature) => (
+                                        <li key={feature.name}>
+                                            <strong>{feature.name}</strong> (Level {feature.level}):{' '}
+                                            {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+
+            <div>
+                <button type="button" onClick={addClass}>
+                    + Add Class
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default ClassTab;
