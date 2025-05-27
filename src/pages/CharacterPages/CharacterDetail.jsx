@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteCharacter, getCharacterById } from '../../services/character.service';
 import allProficiencies from '../../../public/data/proficiencies.json';
@@ -11,6 +11,7 @@ import {
     getArmorClass,
     getClassBasedProficiencies
 } from '../../utils/characterUtils';
+import { ItemContext } from '../../context/item.context';
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -20,6 +21,9 @@ const CharacterDetail = () => {
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+
+    const { items } = useContext(ItemContext);
+    const allWeapons = items.filter(i => i.type === 'Weapon');
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -120,6 +124,10 @@ const CharacterDetail = () => {
     const classBasedProfs = getClassBasedProficiencies(character.classes || []);
     const totalLevel = getTotalLevel(character.classes);
     const profBonus = getProficiencyBonus(totalLevel);
+    const combinedWeaponProfs = [
+        ...classBasedProfs.weaponCategories,
+        ...classBasedProfs.namedWeapons,
+    ];
 
     return (
         <div>
@@ -215,53 +223,100 @@ const CharacterDetail = () => {
 
             <h2>Proficiencies</h2>
             {character.proficiencies ? (
-                Object.entries(allProficiencies).map(([type, list]) => (
-                    <div key={type}>
-                        <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
-                        <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                            {list.map(prof => {
-                                const isSelected =
-                                    character.proficiencies?.[type]?.includes(prof) ||
-                                    (type === 'armor' && classBasedProfs.armor.includes(prof)) ||
-                                    (type === 'weapons' && classBasedProfs.weapons.includes(prof));
+                Object.entries(allProficiencies).map(([type, list]) => {
+                    if (type === 'weapons') {
+                        const filteredWeapons = list.filter(prof => {
 
-                                const isSkill = type === 'skills';
-                                const statKey = isSkill ? skillToStatMap[prof] : null;
-                                const statValue = isSkill && statKey ? character.stats[statKey] : null;
-                                const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
-                                const hasExpertise = character.expertise?.includes(prof);
-                                const totalMod = isSkill && statValue !== null
-                                    ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
-                                    : null;
+                            if (classBasedProfs.weaponCategories.includes(prof)) return true;
 
-                                return (
-                                    <li
-                                        key={prof}
-                                        style={{
-                                            display: 'inline-block',
-                                            margin: '4px 8px 4px 0',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            backgroundColor: isSelected ? '#4caf50' : '#eee',
-                                            color: isSelected ? 'white' : '#333',
-                                            fontWeight: isSelected ? 'bold' : 'normal',
-                                        }}
-                                    >
-                                        {prof}
-                                        {isSkill && statValue !== null && (
-                                            <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
-                                                ({totalMod >= 0 ? '+' : ''}{totalMod})
-                                            </span>
-                                        )}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                ))
+                            const isNamed =
+                                character.proficiencies?.weapons?.includes(prof) ||
+                                classBasedProfs.namedWeapons.includes(prof);
+
+                            if (!isNamed) return false;
+
+                            const weaponEntry = allWeapons.find(w => w.weaponType === prof);
+                            const weaponCategory = weaponEntry?.weaponClass;
+
+                            if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
+
+                            return true;
+                        });
+
+
+                        return (
+                            <div key="weapons">
+                                <strong>Weapons:</strong>
+                                <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                                    {filteredWeapons.map(prof => (
+                                        <li
+                                            key={prof}
+                                            style={{
+                                                display: 'inline-block',
+                                                margin: '4px 8px 4px 0',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                backgroundColor: '#4caf50',
+                                                color: 'white',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {prof}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div key={type}>
+                            <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
+                            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                                {list.map(prof => {
+                                    const isSelected =
+                                        character.proficiencies?.[type]?.includes(prof) ||
+                                        (type === 'armor' && classBasedProfs.armor.includes(prof));
+
+                                    const isSkill = type === 'skills';
+                                    const statKey = isSkill ? skillToStatMap[prof] : null;
+                                    const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                    const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                    const hasExpertise = character.expertise?.includes(prof);
+                                    const totalMod = isSkill && statValue !== null
+                                        ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
+                                        : null;
+
+                                    return (
+                                        <li
+                                            key={prof}
+                                            style={{
+                                                display: 'inline-block',
+                                                margin: '4px 8px 4px 0',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                backgroundColor: isSelected ? '#4caf50' : '#eee',
+                                                color: isSelected ? 'white' : '#333',
+                                                fontWeight: isSelected ? 'bold' : 'normal',
+                                            }}
+                                        >
+                                            {prof}
+                                            {isSkill && statValue !== null && (
+                                                <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
+                                                    ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                                </span>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    );
+                })
             ) : (
                 <p><em>No proficiencies selected.</em></p>
             )}
+
 
             <h2>Backstory</h2>
             {character.background && (

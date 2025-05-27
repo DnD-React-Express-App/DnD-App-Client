@@ -1,54 +1,54 @@
 export const classProficiencies = {
     Barbarian: {
-      weapons: ['Simple', 'Martial'],
-      armor: ['Light', 'Medium', 'Shields']
+        weapons: ['Simple', 'Martial'],
+        armor: ['Light', 'Medium', 'Shields']
     },
     Bard: {
-      weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
-      armor: ['Light']
+        weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
+        armor: ['Light']
     },
     Cleric: {
-      weapons: ['Simple'],
-      armor: ['Light', 'Medium', 'Shields']
+        weapons: ['Simple'],
+        armor: ['Light', 'Medium', 'Shields']
     },
     Druid: {
-      weapons: ['Club', 'Dagger', 'Dart', 'Javelin', 'Mace', 'Quarterstaff', 'Scimitar', 'Sickle', 'Sling', 'Spear'],
-      armor: ['Light', 'Medium', 'Shields']
+        weapons: ['Club', 'Dagger', 'Dart', 'Javelin', 'Mace', 'Quarterstaff', 'Scimitar', 'Sickle', 'Sling', 'Spear'],
+        armor: ['Light', 'Medium', 'Shields']
     },
     Fighter: {
-      weapons: ['Simple', 'Martial'],
-      armor: ['Light', 'Medium', 'Heavy', 'Shields']
+        weapons: ['Simple', 'Martial'],
+        armor: ['Light', 'Medium', 'Heavy', 'Shields']
     },
     Monk: {
-      weapons: ['Simple', 'Shortsword'],
-      armor: []
+        weapons: ['Simple', 'Shortsword'],
+        armor: []
     },
     Paladin: {
-      weapons: ['Simple', 'Martial'],
-      armor: ['Light', 'Medium', 'Heavy', 'Shields']
+        weapons: ['Simple', 'Martial'],
+        armor: ['Light', 'Medium', 'Heavy', 'Shields']
     },
     Ranger: {
-      weapons: ['Simple', 'Martial'],
-      armor: ['Light', 'Medium', 'Shields']
+        weapons: ['Simple', 'Martial'],
+        armor: ['Light', 'Medium', 'Shields']
     },
     Rogue: {
-      weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
-      armor: ['Light']
+        weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
+        armor: ['Light']
     },
     Sorcerer: {
-      weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
-      armor: []
+        weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
+        armor: []
     },
     Warlock: {
-      weapons: ['Simple'],
-      armor: ['Light']
+        weapons: ['Simple'],
+        armor: ['Light']
     },
     Wizard: {
-      weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
-      armor: []
+        weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
+        armor: []
     }
-  };
-  
+};
+
 
 
 export const getModifier = (score) => {
@@ -108,22 +108,36 @@ export const skillToStatMap = {
 
 export function getClassBasedProficiencies(classes = []) {
     const armorSet = new Set();
-    const weaponSet = new Set();
-  
+    const weaponCategorySet = new Set();
+    const namedWeaponSet = new Set();
+
+    const generalCategories = ['Simple', 'Martial'];
+
     classes.forEach(cls => {
-      const profs = classProficiencies[cls.name];
-      if (profs) {
-        profs.armor?.forEach(a => armorSet.add(a));
-        profs.weapons?.forEach(w => weaponSet.add(w));
-      }
+        const profs = classProficiencies[cls.name];
+        if (profs) {
+            // Armor
+            profs.armor?.forEach(a => armorSet.add(a));
+
+            // Weapons
+            profs.weapons?.forEach(w => {
+                if (generalCategories.includes(w)) {
+                    weaponCategorySet.add(w);
+                } else {
+                    namedWeaponSet.add(w);
+                }
+            });
+        }
     });
-  
+
     return {
-      armor: Array.from(armorSet),
-      weapons: Array.from(weaponSet)
+        armor: Array.from(armorSet),
+        weaponCategories: Array.from(weaponCategorySet),
+        namedWeapons: Array.from(namedWeaponSet),
     };
-  }
-  
+}
+
+
 
 
 
@@ -143,13 +157,15 @@ export function getWeaponAttackBonus(character, weapon) {
     const profBonus = getProficiencyBonus(totalLevel);
 
     const classProfs = getClassBasedProficiencies(character.classes || []);
+
     const isProficient =
-        classProfs.weapons.includes(weapon.weaponClass) ||
-        classProfs.weapons.includes(weapon.weaponType) ||
-        classProfs.weapons.includes(weapon.name);
+        classProfs.weaponCategories.includes(weapon.weaponClass) ||
+        classProfs.namedWeapons.includes(weapon.weaponType) ||
+        classProfs.namedWeapons.includes(weapon.name); // if you ever store names directly
 
     return statMod + (isProficient ? profBonus : 0);
 }
+
 
 
 export function getArmorClass(character) {

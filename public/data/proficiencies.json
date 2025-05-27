@@ -27,7 +27,22 @@
   ],
   "weapons": [
     "Simple",
-    "Martial"
+    "Martial",
+    "Hand Crossbow",
+    "Longsword",
+    "Rapier",
+    "Shortsword",
+    "Dagger",
+    "Dart",
+    "Sling",
+    "Quarterstaff",
+    "Light Crossbow",
+    "Club",
+    "Javelin",
+    "Mace",
+    "Scimitar",
+    "Sickle",
+    "Spear"
   ],
   "tools": [
     "Thieves' Tools",
