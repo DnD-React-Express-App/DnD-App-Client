@@ -8,7 +8,8 @@ import {
     getTotalLevel,
     skillToStatMap,
     getWeaponAttackBonus,
-    getArmorClass
+    getArmorClass,
+    getClassBasedProficiencies
 } from '../../utils/characterUtils';
 
 const CharacterDetail = () => {
@@ -116,6 +117,7 @@ const CharacterDetail = () => {
     if (loading) return <p>Loading character...</p>;
     if (!character) return <p>Character not found</p>;
 
+    const classBasedProfs = getClassBasedProficiencies(character.classes || []);
     const totalLevel = getTotalLevel(character.classes);
     const profBonus = getProficiencyBonus(totalLevel);
 
@@ -218,7 +220,11 @@ const CharacterDetail = () => {
                         <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
                         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                             {list.map(prof => {
-                                const isSelected = character.proficiencies?.[type]?.includes(prof);
+                                const isSelected =
+                                    character.proficiencies?.[type]?.includes(prof) ||
+                                    (type === 'armor' && classBasedProfs.armor.includes(prof)) ||
+                                    (type === 'weapons' && classBasedProfs.weapons.includes(prof));
+
                                 const isSkill = type === 'skills';
                                 const statKey = isSkill ? skillToStatMap[prof] : null;
                                 const statValue = isSkill && statKey ? character.stats[statKey] : null;

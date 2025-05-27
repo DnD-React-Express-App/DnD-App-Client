@@ -1,3 +1,55 @@
+export const classProficiencies = {
+    Barbarian: {
+      weapons: ['Simple', 'Martial'],
+      armor: ['Light', 'Medium', 'Shields']
+    },
+    Bard: {
+      weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
+      armor: ['Light']
+    },
+    Cleric: {
+      weapons: ['Simple'],
+      armor: ['Light', 'Medium', 'Shields']
+    },
+    Druid: {
+      weapons: ['Club', 'Dagger', 'Dart', 'Javelin', 'Mace', 'Quarterstaff', 'Scimitar', 'Sickle', 'Sling', 'Spear'],
+      armor: ['Light', 'Medium', 'Shields']
+    },
+    Fighter: {
+      weapons: ['Simple', 'Martial'],
+      armor: ['Light', 'Medium', 'Heavy', 'Shields']
+    },
+    Monk: {
+      weapons: ['Simple', 'Shortsword'],
+      armor: []
+    },
+    Paladin: {
+      weapons: ['Simple', 'Martial'],
+      armor: ['Light', 'Medium', 'Heavy', 'Shields']
+    },
+    Ranger: {
+      weapons: ['Simple', 'Martial'],
+      armor: ['Light', 'Medium', 'Shields']
+    },
+    Rogue: {
+      weapons: ['Simple', 'Hand Crossbow', 'Longsword', 'Rapier', 'Shortsword'],
+      armor: ['Light']
+    },
+    Sorcerer: {
+      weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
+      armor: []
+    },
+    Warlock: {
+      weapons: ['Simple'],
+      armor: ['Light']
+    },
+    Wizard: {
+      weapons: ['Dagger', 'Dart', 'Sling', 'Quarterstaff', 'Light Crossbow'],
+      armor: []
+    }
+  };
+  
+
 
 export const getModifier = (score) => {
     return Math.floor((score - 10) / 2);
@@ -54,13 +106,31 @@ export const skillToStatMap = {
     "Survival": "wisdom"
 };
 
+export function getClassBasedProficiencies(classes = []) {
+    const armorSet = new Set();
+    const weaponSet = new Set();
+  
+    classes.forEach(cls => {
+      const profs = classProficiencies[cls.name];
+      if (profs) {
+        profs.armor?.forEach(a => armorSet.add(a));
+        profs.weapons?.forEach(w => weaponSet.add(w));
+      }
+    });
+  
+    return {
+      armor: Array.from(armorSet),
+      weapons: Array.from(weaponSet)
+    };
+  }
+  
+
 
 
 export function getWeaponAttackBonus(character, weapon) {
     const stats = character.stats || {};
     const strMod = getModifier(stats.strength || 10);
     const dexMod = getModifier(stats.dexterity || 10);
-
 
     let statMod = strMod;
     if (weapon.finesse) {
@@ -72,15 +142,15 @@ export function getWeaponAttackBonus(character, weapon) {
     const totalLevel = getTotalLevel(character.classes || []);
     const profBonus = getProficiencyBonus(totalLevel);
 
-
-    const proficiencies = character.proficiencies?.weapons || [];
+    const classProfs = getClassBasedProficiencies(character.classes || []);
     const isProficient =
-        proficiencies.includes(`${weapon.weaponClass} Weapons`) ||
-        proficiencies.includes(weapon.weaponType) ||
-        proficiencies.includes(weapon.name);
+        classProfs.weapons.includes(weapon.weaponClass) ||
+        classProfs.weapons.includes(weapon.weaponType) ||
+        classProfs.weapons.includes(weapon.name);
 
     return statMod + (isProficient ? profBonus : 0);
 }
+
 
 export function getArmorClass(character) {
     const dexMod = getModifier(character.stats?.dexterity || 10);
@@ -89,7 +159,7 @@ export function getArmorClass(character) {
     const armor = items.find(item => item.type === 'Armor' && item.armorCategory !== 'Shield');
     const shield = items.find(item => item.type === 'Armor' && item.armorCategory === 'Shield');
 
-    let baseAC = 10; 
+    let baseAC = 10;
     let maxDexBonus = null;
     let dexApplies = true;
 

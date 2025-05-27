@@ -3,6 +3,8 @@ import axios from 'axios';
 import { ItemContext } from '../../context/item.context';
 import { createCharacter, updateCharacter } from '../../services/character.service';
 import proficiencies from '../../../public/data/proficiencies.json';
+import { getClassBasedProficiencies } from '../../utils/characterUtils';
+
 
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
@@ -19,6 +21,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [allClassFeatures, setAllClassFeatures] = useState({});
     const [classFeatures, setClassFeatures] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
+    const [classBasedProficiencies, setClassBasedProficiencies] = useState({ armor: [], weapons: [] });
 
 
     const [form, setForm] = useState({
@@ -191,6 +194,12 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         fetchBackgroundFeatures();
     }, [form.background]);
 
+    useEffect(() => {
+        const result = getClassBasedProficiencies(form.classes);
+        setClassBasedProficiencies(result);
+    }, [form.classes]);
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -199,6 +208,11 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             const payload = {
                 ...form,
                 items: [selectedArmor, selectedWeapon].filter(Boolean),
+                proficiencies: {
+                    ...form.proficiencies,
+                    armor: classBasedProficiencies.armor,
+                    weapons: classBasedProficiencies.weapons
+                }
             };
 
             let res;
@@ -339,10 +353,39 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     <>
                         <h3>Proficiencies</h3>
 
-                        {Object.entries(proficiencies).map(([type, list]) => (
+                        {/* Armor Proficiencies (from class) */}
+                        <div style={{ marginBottom: '1rem' }}>
+                            <h4>Armor Proficiencies (from class)</h4>
+                            {classBasedProficiencies.armor?.length > 0 ? (
+                                <ul>
+                                    {classBasedProficiencies.armor.map((prof) => (
+                                        <li key={prof}>{prof}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p><em>No armor proficiencies granted by current class(es).</em></p>
+                            )}
+                        </div>
+
+                        {/* Weapon Proficiencies (from class) */}
+                        <div style={{ marginBottom: '1rem' }}>
+                            <h4>Weapon Proficiencies (from class)</h4>
+                            {classBasedProficiencies.weapons?.length > 0 ? (
+                                <ul>
+                                    {classBasedProficiencies.weapons.map((prof) => (
+                                        <li key={prof}>{prof}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p><em>No weapon proficiencies granted by current class(es).</em></p>
+                            )}
+                        </div>
+
+                        {/* Skills and Tools remain editable */}
+                        {['skills', 'tools'].map((type) => (
                             <div key={type} style={{ marginBottom: '1rem' }}>
                                 <h4>{type.charAt(0).toUpperCase() + type.slice(1)}</h4>
-                                {list.map(item => (
+                                {proficiencies[type].map((item) => (
                                     <label key={item} style={{ display: 'block' }}>
                                         <input
                                             type="checkbox"
@@ -350,14 +393,14 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                             checked={form.proficiencies[type]?.includes(item)}
                                             onChange={(e) => {
                                                 const isChecked = e.target.checked;
-                                                setForm(prev => ({
+                                                setForm((prev) => ({
                                                     ...prev,
                                                     proficiencies: {
                                                         ...prev.proficiencies,
                                                         [type]: isChecked
                                                             ? [...prev.proficiencies[type], item]
-                                                            : prev.proficiencies[type].filter(i => i !== item)
-                                                    }
+                                                            : prev.proficiencies[type].filter((i) => i !== item),
+                                                    },
                                                 }));
                                             }}
                                         />
@@ -367,10 +410,11 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                             </div>
                         ))}
 
+                        {/* Expertise remains as-is */}
                         {getExpertiseSlots() > 0 && (
                             <>
                                 <h3>Expertise (Select up to {getExpertiseSlots()}):</h3>
-                                {proficiencies.skills.concat(proficiencies.tools).map((option) => (
+                                {proficiencies.skills.concat(proficiencies.tools).map((option) =>
                                     form.proficiencies.skills.includes(option) || form.proficiencies.tools.includes(option) ? (
                                         <label key={option} style={{ display: 'block' }}>
                                             <input
@@ -382,22 +426,23 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                                                 }
                                                 onChange={(e) => {
                                                     const isChecked = e.target.checked;
-                                                    setForm(prev => ({
+                                                    setForm((prev) => ({
                                                         ...prev,
                                                         expertise: isChecked
                                                             ? [...prev.expertise, option]
-                                                            : prev.expertise.filter(i => i !== option)
+                                                            : prev.expertise.filter((i) => i !== option),
                                                     }));
                                                 }}
                                             />
                                             {option}
                                         </label>
                                     ) : null
-                                ))}
+                                )}
                             </>
                         )}
                     </>
                 )}
+
 
 
 

@@ -20,14 +20,14 @@
     "Survival"
   ],
   "armor": [
-    "Light Armor",
-    "Medium Armor",
-    "Heavy Armor",
+    "Light",
+    "Medium",
+    "Heavy",
     "Shields"
   ],
   "weapons": [
-    "Simple Weapons",
-    "Martial Weapons"
+    "Simple",
+    "Martial"
   ],
   "tools": [
     "Thieves' Tools",
