@@ -16,7 +16,7 @@ const ClassTab = ({
         return (
           <div key={index} style={{ marginBottom: '2rem' }}>
             <select
-              value={className}
+              value={className || ''}
               onChange={e => handleClassChange(index, 'name', e.target.value)}
             >
               <option value="">Select Class</option>

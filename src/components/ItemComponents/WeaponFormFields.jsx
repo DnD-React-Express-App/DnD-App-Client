@@ -1,14 +1,6 @@
 function WeaponFormFields({ formData, handleChange }) {
     return (
       <>
-        <label>Weapon Name:</label>
-        <input
-          name="weaponName"
-          value={formData.weaponName}
-          onChange={handleChange}
-          required
-        />
-  
         <label>Weapon Type:</label>
         <select
           name="weaponType"

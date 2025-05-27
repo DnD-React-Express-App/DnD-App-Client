@@ -13,21 +13,15 @@ function ItemForm({ initialData = {}, onSubmit }) {
     };
 
     const [formData, setFormData] = useState(blankItem);
-
-    useEffect(() => {
-        setFormData(initialData ? { ...blankItem, ...initialData } : blankItem);
-    }, [initialData]);
-
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (initialData && initialData.name) {
-            setFormData(prev => ({
-                ...prev,
-                ...initialData,
-            }));
+            setFormData({ ...blankItem, ...initialData });
+        } else {
+            setFormData(blankItem);
         }
-    }, [initialData]);
+    }, [initialData?._id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

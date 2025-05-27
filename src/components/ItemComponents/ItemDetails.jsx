@@ -8,7 +8,6 @@ function ItemDetails({ item }) {
   
         {item.type === 'Armor' && (
           <>
-            <p><strong>Armor Name:</strong> {item.armorName}</p>
             <p><strong>Base AC:</strong> {item.armorClassBase}</p>
             <p><strong>Dex Modifier:</strong> {item.usesDexModifier ? 'Yes' : 'No'}</p>
             {item.dexModifierCap !== null && <p><strong>Dex Cap:</strong> {item.dexModifierCap}</p>}
@@ -18,7 +17,6 @@ function ItemDetails({ item }) {
   
         {item.type === 'Weapon' && (
           <>
-            <p><strong>Weapon Name:</strong> {item.weaponName}</p>
             <p><strong>Weapon Type:</strong> {item.weaponType}</p>
             <p><strong>Damage:</strong> {item.damageTypes?.map(d => `${d.die} ${d.type}`).join(', ')}</p>
             <p><strong>Properties:</strong> {item.weaponProperties?.join(', ')}</p>

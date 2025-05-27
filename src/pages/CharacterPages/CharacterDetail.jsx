@@ -1,8 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { deleteCharacter, getCharacterById } from '../../services/character.service';
 import allProficiencies from '../../../public/data/proficiencies.json';
-
+import {
+    getModifier,
+    getProficiencyBonus,
+    getTotalLevel,
+    skillToStatMap,
+    getWeaponAttackBonus,
+    getArmorClass,
+    getClassBasedProficiencies
+} from '../../utils/characterUtils';
+import { ItemContext } from '../../context/item.context';
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -13,40 +22,8 @@ const CharacterDetail = () => {
     const [classFeaturesByClass, setClassFeaturesByClass] = useState({});
     const [backgroundFeatures, setBackgroundFeatures] = useState([]);
 
-
-
-    const skillToStatMap = {
-        "Acrobatics": "dexterity",
-        "Animal Handling": "wisdom",
-        "Arcana": "intelligence",
-        "Athletics": "strength",
-        "Deception": "charisma",
-        "History": "intelligence",
-        "Insight": "wisdom",
-        "Intimidation": "charisma",
-        "Investigation": "intelligence",
-        "Medicine": "wisdom",
-        "Nature": "intelligence",
-        "Perception": "wisdom",
-        "Performance": "charisma",
-        "Persuasion": "charisma",
-        "Religion": "intelligence",
-        "Sleight of Hand": "dexterity",
-        "Stealth": "dexterity",
-        "Survival": "wisdom"
-    };
-
-
-    const getModifier = (score) => Math.floor((score - 10) / 2);
-
-    const getProficiencyBonus = (level) => {
-        if (level >= 17) return 6;
-        if (level >= 13) return 5;
-        if (level >= 9) return 4;
-        if (level >= 5) return 3;
-        return 2;
-      };
-
+    const { items } = useContext(ItemContext);
+    const allWeapons = items.filter(i => i.type === 'Weapon');
 
     useEffect(() => {
         const fetchCharacter = async () => {
@@ -129,7 +106,6 @@ const CharacterDetail = () => {
         fetchBackgroundFeatures();
     }, [character?.background]);
 
-
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this character?')) {
             try {
@@ -145,8 +121,13 @@ const CharacterDetail = () => {
     if (loading) return <p>Loading character...</p>;
     if (!character) return <p>Character not found</p>;
 
+    const classBasedProfs = getClassBasedProficiencies(character.classes || []);
     const totalLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0);
     const profBonus = getProficiencyBonus(totalLevel);
+    const combinedWeaponProfs = [
+        ...classBasedProfs.weaponCategories,
+        ...classBasedProfs.namedWeapons,
+    ];
 
     return (
         <div>
@@ -179,7 +160,7 @@ const CharacterDetail = () => {
                                         <strong>Unlocked Features:</strong>
                                         <ul>
                                             {classFeaturesByClass[cls.name].unlocked.map(f => (
-                                                <li key={f.name}>
+                                                <li key={`${f.name}-${f.level}`}>
                                                     <strong>{f.name}</strong> (Lv {f.level}): {f.description}
                                                 </li>
                                             ))}
@@ -191,7 +172,7 @@ const CharacterDetail = () => {
                                         <strong>Upcoming Features:</strong>
                                         <ul>
                                             {classFeaturesByClass[cls.name].upcoming.map(f => (
-                                                <li key={f.name}>
+                                                <li key={`${f.name}-${f.level}`}>
                                                     <strong>{f.name}</strong> (Lv {f.level}): {f.description}
                                                 </li>
                                             ))}
@@ -204,18 +185,26 @@ const CharacterDetail = () => {
                 ))}
             </ul>
 
-            <h3>Items</h3>
+            <h3>Equipment</h3>
             {character.items?.length ? (
                 <ul>
                     {character.items.map((item) => (
                         <li key={item._id}>
                             <strong>{item.name}</strong> ({item.type})
+                            {item.type === 'Weapon' && (
+                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                    Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                </span>
+                            )}
                         </li>
                     ))}
                 </ul>
             ) : (
                 <p>No items equipped.</p>
             )}
+
+            <h2>Defense</h2>
+            <p><strong>AC:</strong> {getArmorClass(character)}</p>
 
             <h2>Stats</h2>
             <ul>
@@ -234,46 +223,96 @@ const CharacterDetail = () => {
 
             <h2>Proficiencies</h2>
             {character.proficiencies ? (
-                Object.entries(allProficiencies).map(([type, list]) => (
-                    <div key={type}>
-                        <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
-                        <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                            {list.map(prof => {
-                                const isSelected = character.proficiencies?.[type]?.includes(prof);
-                                const isSkill = type === 'skills';
-                                const statKey = isSkill ? skillToStatMap[prof] : null;
-                                const statValue = isSkill && statKey ? character.stats[statKey] : null;
-                                const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
-                                const totalMod = isSkill && statValue !== null
-                                    ? baseMod + (isSelected ? profBonus : 0)
-                                    : null;
+                Object.entries(allProficiencies).map(([type, list]) => {
+                    if (type === 'weapons') {
+                        const filteredWeapons = list.filter(prof => {
 
-                                return (
-                                    <li
-                                        key={prof}
-                                        style={{
-                                            display: 'inline-block',
-                                            margin: '4px 8px 4px 0',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            backgroundColor: isSelected ? '#4caf50' : '#eee',
-                                            color: isSelected ? 'white' : '#333',
-                                            fontWeight: isSelected ? 'bold' : 'normal',
-                                        }}
-                                    >
-                                        {prof}
-                                        {isSkill && statValue !== null && (
-                                            <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
-                                                ({totalMod >= 0 ? '+' : ''}{totalMod})
-                                            </span>
-                                        )}
-                                    </li>
-                                );
-                            })}
+                            if (classBasedProfs.weaponCategories.includes(prof)) return true;
 
-                        </ul>
-                    </div>
-                ))
+                            const isNamed =
+                                character.proficiencies?.weapons?.includes(prof) ||
+                                classBasedProfs.namedWeapons.includes(prof);
+
+                            if (!isNamed) return false;
+
+                            const weaponEntry = allWeapons.find(w => w.weaponType === prof);
+                            const weaponCategory = weaponEntry?.weaponClass;
+
+                            if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
+
+                            return true;
+                        });
+
+
+                        return (
+                            <div key="weapons">
+                                <strong>Weapons:</strong>
+                                <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                                    {filteredWeapons.map(prof => (
+                                        <li
+                                            key={prof}
+                                            style={{
+                                                display: 'inline-block',
+                                                margin: '4px 8px 4px 0',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                backgroundColor: '#4caf50',
+                                                color: 'white',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {prof}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div key={type}>
+                            <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
+                            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                                {list.map(prof => {
+                                    const isSelected =
+                                        character.proficiencies?.[type]?.includes(prof) ||
+                                        (type === 'armor' && classBasedProfs.armor.includes(prof));
+
+                                    const isSkill = type === 'skills';
+                                    const statKey = isSkill ? skillToStatMap[prof] : null;
+                                    const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                    const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                    const hasExpertise = character.expertise?.includes(prof);
+                                    const totalMod = isSkill && statValue !== null
+                                        ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
+                                        : null;
+
+                                    return (
+                                        <li
+                                            key={prof}
+                                            style={{
+                                                display: 'inline-block',
+                                                margin: '4px 8px 4px 0',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                backgroundColor: isSelected ? '#4caf50' : '#eee',
+                                                color: isSelected ? 'white' : '#333',
+                                                fontWeight: isSelected ? 'bold' : 'normal',
+                                            }}
+                                        >
+                                            {prof}
+                                            {isSkill && statValue !== null && (
+                                                <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
+                                                    ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                                </span>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    );
+                })
             ) : (
                 <p><em>No proficiencies selected.</em></p>
             )}

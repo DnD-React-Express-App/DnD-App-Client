@@ -20,14 +20,29 @@
     "Survival"
   ],
   "armor": [
-    "Light Armor",
-    "Medium Armor",
-    "Heavy Armor",
+    "Light",
+    "Medium",
+    "Heavy",
     "Shields"
   ],
   "weapons": [
-    "Simple Weapons",
-    "Martial Weapons"
+    "Simple",
+    "Martial",
+    "Hand Crossbow",
+    "Longsword",
+    "Rapier",
+    "Shortsword",
+    "Dagger",
+    "Dart",
+    "Sling",
+    "Quarterstaff",
+    "Light Crossbow",
+    "Club",
+    "Javelin",
+    "Mace",
+    "Scimitar",
+    "Sickle",
+    "Spear"
   ],
   "tools": [
     "Thieves' Tools",
