@@ -331,9 +331,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     };
 
     const memoizedRemoveClass = useCallback(
-        (index) => removeClass(setForm, index),
-        [setForm]
+        (index) => removeClass(setForm, index, form, setSelectedSpells),
+        [setForm, form, setSelectedSpells]
       );
+      
 
     return (
         <>

@@ -196,13 +196,25 @@ export const classProficiencies = {
       classes: [...prev.classes, { name: '', level: 1, subclass: '' }]
     }));
   };
+
+  export const removeClass = (setForm, index, form, setSelectedSpells) => {
+    const classNameToRemove = form.classes[index]?.name;
+    if (!classNameToRemove) return;
   
-  export const removeClass = (setForm, index) => {
+    // Remove the class
     setForm(prev => ({
       ...prev,
       classes: prev.classes.filter((_, i) => i !== index)
     }));
+  
+    // Remove any spells associated with the removed class
+    setSelectedSpells(prev => {
+      const updated = { ...prev };
+      delete updated[classNameToRemove];
+      return updated;
+    });
   };
+  
 
   
   export const getSpellcastingAbility = (className) => {
