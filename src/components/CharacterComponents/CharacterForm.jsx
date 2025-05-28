@@ -258,7 +258,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     };
 
     return (
-        <div>
+        <>
             <div className="tabs">
                 {[
                     'Class', 'Species', 'Stats', 'Background', 'Proficiencies', 'Equipment',
@@ -374,7 +374,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
 
                 <button type="submit">Save Character</button>
             </form>
-        </div>
+        </>
     );
 };
 
