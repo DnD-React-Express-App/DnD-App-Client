@@ -1,47 +1,66 @@
+/* Navbar styles (Top nav for auth/profile) */
 .Navbar {
-  position: fixed;              /* Keep it at the top */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;                  /* Full width */
+  width: 100%;
   background-color: #1f1b24;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   font-family: 'Cinzel', serif;
-  z-index: 1000;                /* Ensure it stays above other elements */
+  z-index: 1000;
 }
 
-.Navbar div {
+.Navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
-  gap: 1.5rem;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
+}
+
+.Navbar-right {
+    margin-right: 2.5em;
 }
 
 .Navbar a {
   color: #f5f0e6;
   text-decoration: none;
   font-weight: 600;
-  position: relative;
-  transition: color 0.3s ease;
+  margin-left: 1rem;
 }
 
-.Navbar a:hover,
-.Navbar a.active {
-  color: #ffd700;
-}
-
-.Navbar a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
+/* Bottom navigation for mobile only */
+.BottomNav {
+  position: fixed;
+  bottom: 0;
   left: 0;
-  height: 2px;
-  width: 0%;
-  background-color: #ffd700;
-  transition: width 0.3s ease-in-out;
+  width: 100%;
+  background-color: #1f1b24;
+  display: none;
+  justify-content: space-around;
+  padding: 0.75rem 0;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-.Navbar a:hover::after,
-.Navbar a.active::after {
-  width: 100%;
+.BottomNav a {
+  color: #f5f0e6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Show bottom nav only on small screens */
+@media (max-width: 768px) {
+  .BottomNav {
+    display: flex;
+  }
+
+  .Navbar .Navbar-container {
+    justify-content: flex-end;
+  }
+
+  .desktop-only {
+    display: none;
+  }
 }

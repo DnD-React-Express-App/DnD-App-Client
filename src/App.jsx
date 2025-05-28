@@ -2,6 +2,7 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
+import BottomNav from './components/BottomNavbar';
 
 import Home from './pages/Home';
 
@@ -57,6 +58,7 @@ function App() {
           <Route path="/profile/edit" element={<EditProfile />} />
         </Routes>
       </main>
+      <BottomNav />
     </div>
   );
 }
