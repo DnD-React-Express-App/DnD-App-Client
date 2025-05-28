@@ -10,7 +10,8 @@ import {
     getWeaponAttackBonus,
     getArmorClass,
     getClassBasedProficiencies,
-    calculateSpellSaveDC
+    calculateSpellSaveDC,
+    calculateTotalHP
 } from '../../utils/characterUtils';
 import { ItemContext } from '../../context/item.context';
 import '../../CharacterDetails.css';
@@ -131,6 +132,9 @@ const CharacterDetail = () => {
         ...classBasedProfs.namedWeapons,
     ];
 
+    const conMod = getModifier(character.stats.constitution);
+    const totalHP = calculateTotalHP(character.classes, conMod);
+
     return (
         <div className="character-container">
             <div className="character-header">
@@ -163,6 +167,8 @@ const CharacterDetail = () => {
             <div className="section">
                 <h2>Level</h2>
                 <p><strong>Total Level:</strong> {totalLevel}</p>
+
+            <p><strong>HP:</strong> {totalHP}</p>
             </div>
 
             <div className="section">
@@ -202,6 +208,8 @@ const CharacterDetail = () => {
                         </li>
                     ))}
                 </ul>
+
+            <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
             </div>
 
             <div className="section">
@@ -239,7 +247,6 @@ const CharacterDetail = () => {
                     <p>No spells selected.</p>
                 )}
             </div>
-
             <div className="section">
                 <h2>Defense</h2>
                 <p><strong>AC:</strong> {getArmorClass(character)}</p>

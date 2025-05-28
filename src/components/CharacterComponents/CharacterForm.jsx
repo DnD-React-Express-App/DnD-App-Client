@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { ItemContext } from '../../context/item.context';
 import { createCharacter, updateCharacter } from '../../services/character.service';
 import proficiencies from '../../../public/data/proficiencies.json';
@@ -330,6 +330,11 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }
     };
 
+    const memoizedRemoveClass = useCallback(
+        (index) => removeClass(setForm, index),
+        [setForm]
+      );
+
     return (
         <>
             <div className="tabs">
@@ -357,8 +362,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                         classFeatures={classFeatures}
                         handleClassChange={handleClassChange}
                         handleSubclassChange={handleSubclassChange}
-                        removeClass={removeClass}
-                        addClass={addClass}
+                        removeClass={memoizedRemoveClass}
+                        addClass={() => addClass(setForm)}
                     />
                 )}
 
