@@ -124,6 +124,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     }, [items]);
 
     useEffect(() => {
+        console.log(initialData.items);
+
         // Prepopulate selected spells
         if (initialData?.spells?.length) {
             const groupedSpells = initialData.spells.reduce((acc, spell) => {
@@ -135,13 +137,26 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         }
     
         // Prepopulate selected items
-        if (initialData?.items?.length) {
-            const armor = initialData.items.find(i => i.type === 'Armor' && i.armorCategory !== 'Shield');
-            const weapon = initialData.items.find(i => i.type === 'Weapon');
+        if (initialData?.items?.length && items?.length) {
+            const initialItemIds = initialData.items.map(item => item._id?.toString?.());
+    
+            const armor = items.find(i =>
+                i.type === 'Armor' &&
+                i.armorCategory !== 'Shield' &&
+                initialItemIds.includes(i._id?.toString?.())
+            );
+    
+            const weapon = items.find(i =>
+                i.type === 'Weapon' &&
+                initialItemIds.includes(i._id?.toString?.())
+            );
+    
             setSelectedArmor(armor || null);
             setSelectedWeapon(weapon || null);
         }
-    }, [initialData]);
+    }, [initialData, items.length]);
+    
+    
 
     useEffect(() => {
         (async () => {

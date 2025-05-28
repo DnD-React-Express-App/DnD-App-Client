@@ -12,8 +12,11 @@ function EquipmentTab({
     <>
       <label>Select Armor:</label>
       <select
-        value={selectedArmor}
-        onChange={e => setSelectedArmor(e.target.value)}
+        value={selectedArmor?._id || ''}
+        onChange={e => {
+          const selected = armorOptions.find(armor => armor._id === e.target.value);
+          setSelectedArmor(selected || null);
+        }}
       >
         <option value="">-- Select Armor --</option>
         {armorOptions.map(armor => (
@@ -23,10 +26,12 @@ function EquipmentTab({
         ))}
       </select>
 
-      <label style={{ marginTop: '1rem', display: 'block' }}>Select Weapon:</label>
       <select
-        value={selectedWeapon}
-        onChange={e => setSelectedWeapon(e.target.value)}
+        value={selectedWeapon?._id || ''}
+        onChange={e => {
+          const selected = weaponOptions.find(weapon => weapon._id === e.target.value);
+          setSelectedWeapon(selected || null);
+        }}
       >
         <option value="">-- Select Weapon --</option>
         {weaponOptions.map(weapon => (
