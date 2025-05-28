@@ -1,8 +1,6 @@
 import React from "react";
 import "../../List.css";
 
-import SpellDetail from "./SpellDetail";
-
 import { useState } from 'react';
 
 const SpellCard = ({ spell, selected = false, onSelect = null }) => {
