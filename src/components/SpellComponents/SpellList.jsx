@@ -62,7 +62,7 @@ const SpellList = () => {
   };
 
   return (
-    <div className="list">
+    <div>
       <div className="filters">
         <label>
           Class:
@@ -105,7 +105,7 @@ const SpellList = () => {
         </label>
       </div>
 
-      <div className="spell-list">
+      <div className="list">
         {filteredSpells.map((spell, index) => (
           <SpellCard key={index} spell={spell} />
         ))}

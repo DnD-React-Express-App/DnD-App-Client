@@ -1,37 +1,11 @@
-/* Container that holds filters and cards */
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-/* Filter section */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-start;
-}
-
-.filters label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-  color: #f5f0e6;
-  font-family: 'Cinzel', serif;
-}
-
-/* Container for the cards themselves */
-.spell-list {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: center;
+  margin-top: 1.5rem;
 }
 
-/* Card styles */
 .card {
   flex: 1 1 280px;
   max-width: 320px;
@@ -73,7 +47,7 @@
   background-color: #4e2b5c;
   border: none;
   color: #f5f0e6;
-  margin: 0.5em;
+  margin: .5em;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   font-family: inherit;
