@@ -233,5 +233,44 @@ export const classProficiencies = {
   
     return 8 + statMod + prof;
   };
+
+  
+
+  export const hitDieByClass = {
+    Barbarian: 12,
+    Fighter: 10,
+    Paladin: 10,
+    Ranger: 10,
+    Bard: 8,
+    Cleric: 8,
+    Druid: 8,
+    Monk: 8,
+    Rogue: 8,
+    Warlock: 8,
+    Sorcerer: 6,
+    Wizard: 6,
+  };
+  
+  export const averageHitDie = {
+    6: 4,
+    8: 5,
+    10: 6,
+    12: 7,
+  };
+
+  export const calculateTotalHP = (classes, conModifier) => {
+    return classes.reduce((total, cls, index) => {
+      const hitDie = hitDieByClass[cls.name];
+      const average = averageHitDie[hitDie];
+      const level = cls.level;
+  
+      if (index === 0) {
+        return hitDie + (level - 1) * (average + conModifier);
+      } else {
+        return total + level * (average + conModifier);
+      }
+    }, 0);
+  };
+  
   
   

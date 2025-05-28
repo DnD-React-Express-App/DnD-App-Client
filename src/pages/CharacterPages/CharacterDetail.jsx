@@ -10,7 +10,8 @@ import {
     getWeaponAttackBonus,
     getArmorClass,
     getClassBasedProficiencies,
-    calculateSpellSaveDC
+    calculateSpellSaveDC,
+    calculateTotalHP
 } from '../../utils/characterUtils';
 import { ItemContext } from '../../context/item.context';
 
@@ -130,6 +131,9 @@ const CharacterDetail = () => {
         ...classBasedProfs.namedWeapons,
     ];
 
+    const conMod = getModifier(character.stats.constitution);
+    const totalHP = calculateTotalHP(character.classes, conMod);
+
     return (
         <div>
             <button onClick={() => navigate('/characters')}>← Back</button>
@@ -148,6 +152,8 @@ const CharacterDetail = () => {
                 </>
             )}
             <p><strong>Total Level:</strong> {totalLevel}</p>
+
+            <p><strong>HP:</strong> {totalHP}</p>
 
             <h2>Classes</h2>
             <ul>
@@ -186,6 +192,8 @@ const CharacterDetail = () => {
                 ))}
             </ul>
 
+            <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
+
             <h3>Equipment</h3>
             {character.items?.length ? (
                 <ul>
@@ -217,7 +225,6 @@ const CharacterDetail = () => {
             ) : (
                 <p>No spells selected.</p>
             )}
-
 
             <h2>Defense</h2>
             <p><strong>AC:</strong> {getArmorClass(character)}</p>
