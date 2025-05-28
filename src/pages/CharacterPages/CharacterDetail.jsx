@@ -17,6 +17,8 @@ import { ItemContext } from '../../context/item.context';
 import '../../CharacterDetails.css';
 import spellData from '../../../public/data/class_spells.json';
 import SpellCard from "../../components/SpellComponents/SpellCard";
+import ClassFeatureDetail from '../../components/CharacterComponents/ClassFeatureDetail';
+import ExpandableSection from '../../components/ExpandableSection';
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -129,10 +131,6 @@ const CharacterDetail = () => {
     const classBasedProfs = getClassBasedProficiencies(character.classes || []);
     const totalLevel = character.classes.reduce((sum, cls) => sum + cls.level, 0);
     const profBonus = getProficiencyBonus(totalLevel);
-    const combinedWeaponProfs = [
-        ...classBasedProfs.weaponCategories,
-        ...classBasedProfs.namedWeapons,
-    ];
 
     const conMod = getModifier(character.stats.constitution);
     const totalHP = calculateTotalHP(character.classes, conMod);
@@ -150,8 +148,7 @@ const CharacterDetail = () => {
             <h1 className="character-title">{character.name}</h1>
 
             <div className="section">
-                <h2>Species</h2>
-                <p>{character.race}</p>
+                <p>Race: {character.race} </p>
                 {speciesFeatures.length > 0 && (
                     <>
                         <h3>Species Features</h3>
@@ -166,198 +163,198 @@ const CharacterDetail = () => {
                 )}
             </div>
 
+
             <div className="section">
                 <h2>Level</h2>
                 <p><strong>Total Level:</strong> {totalLevel}</p>
-
-                <p><strong>HP:</strong> {totalHP}</p>
             </div>
 
             <div className="section">
-                <h2>Classes</h2>
-                <ul>
-                    {character.classes.map((cls, i) => (
-                        <li key={i}>
-                            <strong>{cls.name}</strong> (Level {cls.level})
-                            {classFeaturesByClass[cls.name] && (
-                                <div style={{ marginLeft: '1rem' }}>
-                                    {classFeaturesByClass[cls.name].unlocked.length > 0 && (
-                                        <>
-                                            <strong>Unlocked Features:</strong>
-                                            <ul>
-                                                {classFeaturesByClass[cls.name].unlocked.map(f => (
-                                                    <li key={`${f.name}-${f.level}`}>
-                                                        <strong>{f.name}</strong> (Lv {f.level}): {f.description}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </>
-                                    )}
-                                    {classFeaturesByClass[cls.name].upcoming.length > 0 && (
-                                        <>
-                                            <strong>Upcoming Features:</strong>
-                                            <ul>
-                                                {classFeaturesByClass[cls.name].upcoming.map(f => (
-                                                    <li key={`${f.name}-${f.level}`}>
-                                                        <strong>{f.name}</strong> (Lv {f.level}): {f.description}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-
-                <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
-            </div>
-
-            <div className="section">
-                <h3>Equipment</h3>
-                {character.items?.length ? (
+                <ExpandableSection title="Classes">
                     <ul>
-                        {character.items.map((item) => (
-                            <li key={item._id}>
-                                <strong>{item.name}</strong> ({item.type})
-                                {item.type === 'Weapon' && (
-                                    <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                        Attack Bonus: +{getWeaponAttackBonus(character, item)}
-                                    </span>
+                        {character.classes.map((cls, i) => (
+                            <li key={i}>
+                                <strong>{cls.name}</strong> (Level {cls.level})
+                                {classFeaturesByClass[cls.name] && (
+                                    <div style={{ marginLeft: '1rem' }}>
+                                        {classFeaturesByClass[cls.name].unlocked.length > 0 && (
+                                            <>
+                                                <strong>Unlocked Features:</strong>
+                                                <ul>
+                                                    {classFeaturesByClass[cls.name].unlocked.map(f => (
+                                                        <li key={`${f.name}-${f.level}`}>
+                                                            <ClassFeatureDetail feature={f} />
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </>
+                                        )}
+                                        {classFeaturesByClass[cls.name].upcoming.length > 0 && (
+                                            <>
+                                                <strong>Upcoming Features:</strong>
+                                                <ul>
+                                                    {classFeaturesByClass[cls.name].upcoming.map(f => (
+                                                        <li key={`${f.name}-${f.level}`}>
+                                                            <ClassFeatureDetail feature={f} />
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </>
+                                        )}
+                                    </div>
                                 )}
                             </li>
                         ))}
                     </ul>
-                ) : (
-                    <p>No items equipped.</p>
-                )}
+                </ExpandableSection>
             </div>
 
             <div className="section">
-                <h3>Spells</h3>
-                {character.spells?.length ? (
-                    <>
-                        <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
-                        <div className="spell-grid">
-                            {character.spells.map((spell, idx) => {
-                                const fullSpell = spellData[spell.class]?.find(s => s.name === spell.name);
-                                return fullSpell ? (
-                                    <SpellCard key={idx} spell={{ ...fullSpell, classes: [spell.class] }} />
-                                ) : (
-                                    <p key={idx}>Spell data not found for: {spell.name} ({spell.class})</p>
-                                );
-                            })}
-                        </div>
-                    </>
-                ) : (
-                    <p>No spells selected.</p>
-                )}
-            </div>
-
-
-            <div className="section">
-                <h2>Defense</h2>
-                <p><strong>AC:</strong> {getArmorClass(character)}</p>
+                <ExpandableSection title="Combat">
+                    <p><strong>HP:</strong> {totalHP}</p>
+                    <p><strong>AC:</strong> {getArmorClass(character)}</p>
+                    <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
+                    {character.items?.length ? (
+                        <ul>
+                            {character.items.map((item) => (
+                                <li key={item._id}>
+                                    <strong>{item.name}</strong> ({item.type})
+                                    {item.type === 'Weapon' && (
+                                        <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                            Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                        </span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No items equipped.</p>
+                    )}
+                </ExpandableSection>
             </div>
 
             <div className="section">
-                <h2>Stats</h2>
-                <div className="stat-block">
-                    {Object.entries(character.stats).map(([stat, value]) => {
-                        const mod = getModifier(value);
-                        return (
-                            <div className="stat" key={stat}>
-                                {stat.toUpperCase()}
-                                <span>{value} ({mod >= 0 ? '+' : ''}{mod})</span>
+                <ExpandableSection title="Spells">
+                    <h3>Spells</h3>
+                    {character.spells?.length ? (
+                        <>
+                            <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
+                            <div className="spell-grid">
+                                {character.spells.map((spell, idx) => {
+                                    const fullSpell = spellData[spell.class]?.find(s => s.name === spell.name);
+                                    return fullSpell ? (
+                                        <SpellCard key={idx} spell={{ ...fullSpell, classes: [spell.class] }} />
+                                    ) : (
+                                        <p key={idx}>Spell data not found for: {spell.name} ({spell.class})</p>
+                                    );
+                                })}
                             </div>
-                        );
-                    })}
-                </div>
+                        </>
+                    ) : (
+                        <p>No spells selected.</p>
+                    )}
+                </ExpandableSection>
             </div>
 
             <div className="section">
-                <h2>Proficiencies</h2>
-                {character.proficiencies ? (
-                    Object.entries(allProficiencies).map(([type, list]) => {
-                        if (type === 'weapons') {
-                            const filteredWeapons = list.filter(prof => {
-                                if (classBasedProfs.weaponCategories.includes(prof)) return true;
+                <ExpandableSection title="Stats">
+                    <h2>Stats</h2>
+                    <div className="stat-block">
+                        {Object.entries(character.stats).map(([stat, value]) => {
+                            const mod = getModifier(value);
+                            return (
+                                <div className="stat" key={stat}>
+                                    {stat.toUpperCase()}
+                                    <span>{value} ({mod >= 0 ? '+' : ''}{mod})</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </ExpandableSection>
+            </div>
 
-                                const isNamed =
-                                    character.proficiencies?.weapons?.includes(prof) ||
-                                    classBasedProfs.namedWeapons.includes(prof);
+            <div className="section">
+                <ExpandableSection title="Proficiencies">
+                    {character.proficiencies ? (
+                        Object.entries(allProficiencies).map(([type, list]) => {
+                            if (type === 'weapons') {
+                                const filteredWeapons = list.filter(prof => {
+                                    if (classBasedProfs.weaponCategories.includes(prof)) return true;
 
-                                if (!isNamed) return false;
+                                    const isNamed =
+                                        character.proficiencies?.weapons?.includes(prof) ||
+                                        classBasedProfs.namedWeapons.includes(prof);
 
-                                const weaponEntry = allWeapons.find(w => w.weaponType === prof);
-                                const weaponCategory = weaponEntry?.weaponClass;
+                                    if (!isNamed) return false;
 
-                                if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
+                                    const weaponEntry = allWeapons.find(w => w.weaponType === prof);
+                                    const weaponCategory = weaponEntry?.weaponClass;
 
-                                return true;
-                            });
+                                    if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
+
+                                    return true;
+                                });
+
+                                return (
+                                    <div key="weapons">
+                                        <strong>Weapons:</strong>
+                                        <ul className="inline-list">
+                                            {filteredWeapons.map(prof => (
+                                                <li key={prof} className="proficiency-chip selected">{prof}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                );
+                            }
 
                             return (
-                                <div key="weapons">
-                                    <strong>Weapons:</strong>
+                                <div key={type}>
+                                    <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
                                     <ul className="inline-list">
-                                        {filteredWeapons.map(prof => (
-                                            <li key={prof} className="proficiency-chip selected">{prof}</li>
-                                        ))}
+                                        {list.map(prof => {
+                                            const isSelected =
+                                                character.proficiencies?.[type]?.includes(prof) ||
+                                                (type === 'armor' && classBasedProfs.armor.includes(prof));
+
+                                            const isSkill = type === 'skills';
+                                            const statKey = isSkill ? skillToStatMap[prof] : null;
+                                            const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                            const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                            const hasExpertise = character.expertise?.includes(prof);
+                                            const totalMod = isSkill && statValue !== null
+                                                ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
+                                                : null;
+
+                                            return (
+                                                <li
+                                                    key={prof}
+                                                    className={`proficiency-chip${isSelected ? ' selected' : ''}`}
+                                                >
+                                                    {prof}
+                                                    {isSkill && statValue !== null && (
+                                                        <span>
+                                                            ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 </div>
                             );
-                        }
-
-                        return (
-                            <div key={type}>
-                                <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
-                                <ul className="inline-list">
-                                    {list.map(prof => {
-                                        const isSelected =
-                                            character.proficiencies?.[type]?.includes(prof) ||
-                                            (type === 'armor' && classBasedProfs.armor.includes(prof));
-
-                                        const isSkill = type === 'skills';
-                                        const statKey = isSkill ? skillToStatMap[prof] : null;
-                                        const statValue = isSkill && statKey ? character.stats[statKey] : null;
-                                        const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
-                                        const hasExpertise = character.expertise?.includes(prof);
-                                        const totalMod = isSkill && statValue !== null
-                                            ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
-                                            : null;
-
-                                        return (
-                                            <li
-                                                key={prof}
-                                                className={`proficiency-chip${isSelected ? ' selected' : ''}`}
-                                            >
-                                                {prof}
-                                                {isSkill && statValue !== null && (
-                                                    <span>
-                                                        ({totalMod >= 0 ? '+' : ''}{totalMod})
-                                                    </span>
-                                                )}
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p><em>No proficiencies selected.</em></p>
-                )}
+                        })
+                    ) : (
+                        <p><em>No proficiencies selected.</em></p>
+                    )}
+                </ExpandableSection>
             </div>
 
             {character.background && (
                 <div className="section">
-                    <h2>Background</h2>
-                    <p><strong>{character.background}</strong></p>
+                    <ExpandableSection title="Background">
                     {backgroundFeatures.length > 0 && (
                         <>
-                            <h3>Background Features</h3>
+                            <p><strong>{character.background}</strong></p>
                             <ul>
                                 {backgroundFeatures.map((feature, index) => (
                                     <li key={feature._id || feature.name || index}>
@@ -367,13 +364,12 @@ const CharacterDetail = () => {
                             </ul>
                         </>
                     )}
+
+                    <h2>Backstory</h2>
+                    <p>{character.backstory || <em>No backstory provided</em>}</p>
+                    </ExpandableSection>
                 </div>
             )}
-
-            <div className="section">
-                <h2>Backstory</h2>
-                <p>{character.backstory || <em>No backstory provided</em>}</p>
-            </div>
         </div>
     );
 
