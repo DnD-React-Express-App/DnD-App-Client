@@ -1,7 +1,6 @@
 import React from "react";
 import "../../List.css";
 
-import SpellDetail from "./SpellDetail";
 
 import { useState } from 'react';
 
