@@ -71,24 +71,49 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedSpells, setSelectedSpells] = useState({});
 
     const [form, setForm] = useState({
-        _id: initialData._id || null,
-        name: initialData.name || '',
-        race: initialData.race || '',
+        name: '',
+        race: '',
         stats: {
-            strength: initialData.stats?.strength ?? 10,
-            dexterity: initialData.stats?.dexterity ?? 10,
-            constitution: initialData.stats?.constitution ?? 10,
-            intelligence: initialData.stats?.intelligence ?? 10,
-            wisdom: initialData.stats?.wisdom ?? 10,
-            charisma: initialData.stats?.charisma ?? 10,
+            strength: 10,
+            dexterity: 10,
+            constitution: 10,
+            intelligence: 10,
+            wisdom: 10,
+            charisma: 10,
         },
-        classes: initialData.classes || [{ name: '', level: 1, subclass: '' }],
-        level: initialData.level || 1,
-        background: initialData.background || '',
-        backstory: initialData.backstory || '',
-        proficiencies: initialData.proficiencies || { skills: [], armor: [], weapons: [], tools: [] },
-        expertise: initialData.expertise || [],
+        classes: [{ name: '', level: 1, subclass: '' }],
+        level: 1,
+        background: '',
+        backstory: '',
+        proficiencies: { skills: [], armor: [], weapons: [], tools: [] },
+        expertise: [],
     });
+
+    useEffect(() => {
+        if (initialData && initialData._id) {
+            setForm(prev => ({
+                ...prev,
+                _id: initialData._id,
+                name: initialData.name || '',
+                race: initialData.race || '',
+                stats: {
+                    strength: initialData.stats?.strength ?? 10,
+                    dexterity: initialData.stats?.dexterity ?? 10,
+                    constitution: initialData.stats?.constitution ?? 10,
+                    intelligence: initialData.stats?.intelligence ?? 10,
+                    wisdom: initialData.stats?.wisdom ?? 10,
+                    charisma: initialData.stats?.charisma ?? 10,
+                },
+                classes: initialData.classes || [{ name: '', level: 1, subclass: '' }],
+                level: initialData.level || 1,
+                background: initialData.background || '',
+                backstory: initialData.backstory || '',
+                proficiencies: initialData.proficiencies || { skills: [], armor: [], weapons: [], tools: [] },
+                expertise: initialData.expertise || [],
+            }));
+        }
+    }, [initialData]);
+    
 
 
     useEffect(() => {
@@ -99,6 +124,17 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     }, [items]);
 
     useEffect(() => {
+        // Prepopulate selected spells
+        if (initialData?.spells?.length) {
+            const groupedSpells = initialData.spells.reduce((acc, spell) => {
+                if (!acc[spell.class]) acc[spell.class] = [];
+                acc[spell.class].push(spell.name);
+                return acc;
+            }, {});
+            setSelectedSpells(groupedSpells);
+        }
+    
+        // Prepopulate selected items
         if (initialData?.items?.length) {
             const armor = initialData.items.find(i => i.type === 'Armor' && i.armorCategory !== 'Shield');
             const weapon = initialData.items.find(i => i.type === 'Weapon');
