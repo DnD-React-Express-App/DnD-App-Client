@@ -1,6 +1,6 @@
 import React from 'react';
 import CharacterCard from './CharacterCard';
-import '../../Character.css'
+
 
 const CharacterList = ({ characters, onDelete }) => {
     if (!characters || characters.length === 0) {
