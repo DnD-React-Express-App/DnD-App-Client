@@ -71,6 +71,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedSpells, setSelectedSpells] = useState({});
 
     const [form, setForm] = useState({
+        _id: initialData._id || null,
         name: initialData.name || '',
         race: initialData.race || '',
         stats: {
@@ -246,6 +247,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         e.preventDefault();
         try {
             const payload = {
+                ...form,
                 name: form.name,
                 race: form.race,
                 stats: form.stats,
