@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteCharacter } from '../../services/character.service';
-import '../../CharacterCard.css';
+import '../../List.css'
 
 const CharacterCard = ({ character, onDelete }) => {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ const CharacterCard = ({ character, onDelete }) => {
     };
 
     return (
-        <div className="character-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
+        <div className="card" onClick={handleClick} style={{ cursor: 'pointer' }}>
             <h2>{character.name}</h2>
             <p><strong>Race:</strong> {character.race}</p>
             <p><strong>Level:</strong> {character.level}</p>

@@ -1,5 +1,5 @@
 import React from "react";
-import "../../SpellCard.css";
+import "../../List.css";
 
 const SpellCard = ({ spell, selected = false, onSelect = null }) => {
   const description = Array.isArray(spell.desc)
@@ -15,7 +15,7 @@ const SpellCard = ({ spell, selected = false, onSelect = null }) => {
   };
 
   return (
-    <div className={`spell-card ${selected ? "selected" : ""}`}>
+    <div className={`card ${selected ? "selected" : ""}`}>
       {onSelect && (
         <label className="spell-select">
           <input

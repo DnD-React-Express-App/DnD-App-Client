@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpellCard from "./SpellCard";
+import '../../List.css'
 
 const SpellList = () => {
   const [spells, setSpells] = useState([]);
@@ -104,7 +105,7 @@ const SpellList = () => {
         </label>
       </div>
 
-      <div className="spell-list">
+      <div className="list">
         {filteredSpells.map((spell, index) => (
           <SpellCard key={index} spell={spell} />
         ))}
