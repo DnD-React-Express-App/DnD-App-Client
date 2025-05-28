@@ -71,17 +71,24 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [selectedSpells, setSelectedSpells] = useState({});
 
     const [form, setForm] = useState({
-        name: '',
-        race: '',
-        stats: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
-        classes: [{ name: '', level: 1, subclass: '' }],
-        level: 1,
-        background: '',
-        backstory: '',
-        proficiencies: { skills: [], armor: [], weapons: [], tools: [] },
-        expertise: [],
-        ...initialData,
+        name: initialData.name || '',
+        race: initialData.race || '',
+        stats: {
+            strength: initialData.stats?.strength ?? 10,
+            dexterity: initialData.stats?.dexterity ?? 10,
+            constitution: initialData.stats?.constitution ?? 10,
+            intelligence: initialData.stats?.intelligence ?? 10,
+            wisdom: initialData.stats?.wisdom ?? 10,
+            charisma: initialData.stats?.charisma ?? 10,
+        },
+        classes: initialData.classes || [{ name: '', level: 1, subclass: '' }],
+        level: initialData.level || 1,
+        background: initialData.background || '',
+        backstory: initialData.backstory || '',
+        proficiencies: initialData.proficiencies || { skills: [], armor: [], weapons: [], tools: [] },
+        expertise: initialData.expertise || [],
     });
+
 
     useEffect(() => {
         if (items.length) {
@@ -239,15 +246,28 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         e.preventDefault();
         try {
             const payload = {
-                ...form,
+                name: form.name,
+                race: form.race,
+                stats: form.stats,
+                classes: form.classes,
+                level: form.level,
+                background: form.background,
+                backstory: form.backstory,
+                expertise: form.expertise,
                 items: [selectedArmor, selectedWeapon].filter(Boolean),
-                spells: selectedSpells,
+                spells: Object.entries(selectedSpells).flatMap(([cls, spells]) =>
+                    spells.map(spell => ({ name: spell, class: cls }))
+                ),
                 proficiencies: {
                     ...form.proficiencies,
                     armor: classBasedProficiencies.armor,
-                    weapons: [...classBasedProficiencies.weaponCategories, ...classBasedProficiencies.namedWeapons],
+                    weapons: [
+                        ...classBasedProficiencies.weaponCategories,
+                        ...classBasedProficiencies.namedWeapons
+                    ]
                 }
             };
+            console.log('Submitting payload:', payload);
             const res = form._id ? await updateCharacter(form._id, payload) : await createCharacter(payload);
             if (onSuccess) onSuccess(res.data);
             alert(`Character ${form._id ? 'updated' : 'created'}!`);

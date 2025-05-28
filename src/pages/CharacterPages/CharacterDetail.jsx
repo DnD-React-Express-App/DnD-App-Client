@@ -203,6 +203,19 @@ const CharacterDetail = () => {
                 <p>No items equipped.</p>
             )}
 
+            <h3>Spells</h3>
+            {character.spells?.length ? (
+                <ul>
+                    {character.spells.map((spell, idx) => (
+                        <li key={idx}>
+                            {spell.name} ({spell.class})
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No spells.</p>
+            )}
+
             <h2>Defense</h2>
             <p><strong>AC:</strong> {getArmorClass(character)}</p>
 
