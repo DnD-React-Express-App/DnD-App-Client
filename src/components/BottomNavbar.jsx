@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth.context";
-import '../Navbar.css';
+import '../NavBar.css';
 
 function BottomNav() {
   const { isLoggedIn } = useContext(AuthContext);
