@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpellCard from "./SpellCard";
+import '../../List.css'
 
 const SpellList = () => {
   const [spells, setSpells] = useState([]);
@@ -61,7 +62,7 @@ const SpellList = () => {
   };
 
   return (
-    <div>
+    <div className="list">
       <div className="filters">
         <label>
           Class:

@@ -1,9 +1,10 @@
 import '../../ItemCard.css'
 import { Link } from 'react-router-dom';
+import '../../List.css'
 
 function ItemCard({ item }) {
     return (
-        <div className="item-card">
+        <div className="card">
             <h3>
                 <Link to={`/items/${item._id}`}>{item.name}</Link>
             </h3>
