@@ -203,4 +203,35 @@ export const classProficiencies = {
       classes: prev.classes.filter((_, i) => i !== index)
     }));
   };
+
+  
+  export const getSpellcastingAbility = (className) => {
+    const chaClasses = ['Bard', 'Paladin', 'Sorcerer', 'Warlock'];
+    const wisClasses = ['Cleric', 'Druid', 'Ranger'];
+    const intClasses = ['Wizard'];
+  
+    if (chaClasses.includes(className)) return 'charisma';
+    if (wisClasses.includes(className)) return 'wisdom';
+    if (intClasses.includes(className)) return 'intelligence';
+    return null;
+  };
+  
+  export const calculateSpellSaveDC = (character, totalLevel) => {
+    const spellcastingClasses = [
+      'Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard',
+      'Paladin', 'Ranger', 'Warlock'
+    ];
+  
+    const casterClass = character.classes.find(cls =>
+      spellcastingClasses.includes(cls.name)
+    );
+    if (!casterClass) return null;
+  
+    const castingStat = getSpellcastingAbility(casterClass.name);
+    const statMod = Math.floor((character.stats[castingStat] - 10) / 2);
+    const prof = getProficiencyBonus(totalLevel);
+  
+    return 8 + statMod + prof;
+  };
+  
   

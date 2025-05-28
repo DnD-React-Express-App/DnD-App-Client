@@ -9,7 +9,8 @@ import {
     skillToStatMap,
     getWeaponAttackBonus,
     getArmorClass,
-    getClassBasedProficiencies
+    getClassBasedProficiencies,
+    calculateSpellSaveDC
 } from '../../utils/characterUtils';
 import { ItemContext } from '../../context/item.context';
 
@@ -205,16 +206,18 @@ const CharacterDetail = () => {
 
             <h3>Spells</h3>
             {character.spells?.length ? (
-                <ul>
-                    {character.spells.map((spell, idx) => (
-                        <li key={idx}>
-                            {spell.name} ({spell.class})
-                        </li>
-                    ))}
-                </ul>
+                <>
+                    <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
+                    <ul>
+                        {character.spells.map((spell, idx) => (
+                            <li key={idx}>{spell.name} ({spell.class})</li>
+                        ))}
+                    </ul>
+                </>
             ) : (
-                <p>No spells.</p>
+                <p>No spells selected.</p>
             )}
+
 
             <h2>Defense</h2>
             <p><strong>AC:</strong> {getArmorClass(character)}</p>
