@@ -60,7 +60,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const [armorOptions, setArmorOptions] = useState([]);
     const [weaponOptions, setWeaponOptions] = useState([]);
     const [selectedArmor, setSelectedArmor] = useState(null);
-    const [selectedWeapon, setSelectedWeapon] = useState(null);
+    const [selectedWeapons, setSelectedWeapons] = useState([]);
     const [speciesFeatures, setSpeciesFeatures] = useState([]);
     const [allClassFeatures, setAllClassFeatures] = useState({});
     const [allSubclassFeatures, setAllSubclassFeatures] = useState({});
@@ -146,13 +146,13 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 initialItemIds.includes(i._id?.toString?.())
             );
     
-            const weapon = items.find(i =>
+            const weapons = items.filter(i =>
                 i.type === 'Weapon' &&
                 initialItemIds.includes(i._id?.toString?.())
-            );
+              );
     
             setSelectedArmor(armor || null);
-            setSelectedWeapon(weapon || null);
+            setSelectedWeapons(weapons);
         }
     }, [initialData, items.length]);
     
@@ -307,7 +307,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 background: form.background,
                 backstory: form.backstory,
                 expertise: form.expertise,
-                items: [selectedArmor, selectedWeapon].filter(Boolean),
+                items: [selectedArmor, ...selectedWeapons].filter(Boolean),
                 spells: Object.entries(selectedSpells).flatMap(([cls, spells]) =>
                     spells.map(spell => ({ name: spell, class: cls }))
                 ),
@@ -425,8 +425,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     <EquipmentTab
                         selectedArmor={selectedArmor}
                         setSelectedArmor={setSelectedArmor}
-                        selectedWeapon={selectedWeapon}
-                        setSelectedWeapon={setSelectedWeapon}
+                        selectedWeapons={selectedWeapons}
+                        setSelectedWeapons={setSelectedWeapons}
                         armorOptions={armorOptions}
                         weaponOptions={weaponOptions}
                     />

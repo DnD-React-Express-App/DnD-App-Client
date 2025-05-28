@@ -3,8 +3,8 @@ import React from 'react';
 function EquipmentTab({
   selectedArmor,
   setSelectedArmor,
-  selectedWeapon,
-  setSelectedWeapon,
+  selectedWeapons,
+  setSelectedWeapons,
   armorOptions,
   weaponOptions,
 }) {
@@ -26,20 +26,23 @@ function EquipmentTab({
         ))}
       </select>
 
+      <label style={{ marginTop: '1rem', display: 'block' }}>Select Weapons:</label>
       <select
-        value={selectedWeapon?._id || ''}
+        multiple
+        value={selectedWeapons.map(w => w._id)}
         onChange={e => {
-          const selected = weaponOptions.find(weapon => weapon._id === e.target.value);
-          setSelectedWeapon(selected || null);
+          const selectedIds = Array.from(e.target.selectedOptions).map(option => option.value);
+          const selected = weaponOptions.filter(w => selectedIds.includes(w._id));
+          setSelectedWeapons(selected);
         }}
       >
-        <option value="">-- Select Weapon --</option>
         {weaponOptions.map(weapon => (
           <option key={weapon._id} value={weapon._id}>
             {weapon.name}
           </option>
         ))}
       </select>
+
     </>
   );
 }
