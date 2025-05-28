@@ -1,6 +1,7 @@
 import React from "react";
 import "../../List.css";
 
+
 import { useState } from 'react';
 
 const SpellCard = ({ spell, selected = false, onSelect = null }) => {
