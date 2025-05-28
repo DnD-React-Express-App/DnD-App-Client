@@ -13,6 +13,7 @@ import {
     calculateSpellSaveDC
 } from '../../utils/characterUtils';
 import { ItemContext } from '../../context/item.context';
+import '../../CharacterDetails.css';
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -131,215 +132,213 @@ const CharacterDetail = () => {
     ];
 
     return (
-        <div>
-            <button onClick={() => navigate('/characters')}>← Back</button>
-            <h1>{character.name}</h1>
-            <p><strong>Species:</strong> {character.race}</p>
-            {speciesFeatures.length > 0 && (
-                <>
-                    <h3>Species Features</h3>
-                    <ul>
-                        {speciesFeatures.map((feature) => (
-                            <li key={feature._id || feature.name}>
-                                <strong>{feature.name}:</strong> {feature.description}
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
-            <p><strong>Total Level:</strong> {totalLevel}</p>
+        <div className="character-container">
+            <div className="character-header">
+                <button onClick={() => navigate('/characters')}>← Back</button>
+                <div className="action-buttons">
+                    <button className="edit-button" onClick={() => navigate(`/characters/${character._id}/edit`)}>Edit</button>
+                    <button className="delete-button" onClick={handleDelete}>Delete</button>
+                </div>
+            </div>
 
-            <h2>Classes</h2>
-            <ul>
-                {character.classes.map((cls, i) => (
-                    <li key={i}>
-                        <strong>{cls.name}</strong> (Level {cls.level})
-                        {classFeaturesByClass[cls.name] && (
-                            <div style={{ marginLeft: '1rem' }}>
-                                {classFeaturesByClass[cls.name].unlocked.length > 0 && (
-                                    <>
-                                        <strong>Unlocked Features:</strong>
-                                        <ul>
-                                            {classFeaturesByClass[cls.name].unlocked.map(f => (
-                                                <li key={`${f.name}-${f.level}`}>
-                                                    <strong>{f.name}</strong> (Lv {f.level}): {f.description}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
-                                {classFeaturesByClass[cls.name].upcoming.length > 0 && (
-                                    <>
-                                        <strong>Upcoming Features:</strong>
-                                        <ul>
-                                            {classFeaturesByClass[cls.name].upcoming.map(f => (
-                                                <li key={`${f.name}-${f.level}`}>
-                                                    <strong>{f.name}</strong> (Lv {f.level}): {f.description}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <h1 className="character-title">{character.name}</h1>
 
-            <h3>Equipment</h3>
-            {character.items?.length ? (
+            <div className="section">
+                <h2>Species</h2>
+                <p>{character.race}</p>
+                {speciesFeatures.length > 0 && (
+                    <>
+                        <h3>Species Features</h3>
+                        <ul>
+                            {speciesFeatures.map((feature) => (
+                                <li key={feature._id || feature.name}>
+                                    <strong>{feature.name}:</strong> {feature.description}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+            </div>
+
+            <div className="section">
+                <h2>Level</h2>
+                <p><strong>Total Level:</strong> {totalLevel}</p>
+            </div>
+
+            <div className="section">
+                <h2>Classes</h2>
                 <ul>
-                    {character.items.map((item) => (
-                        <li key={item._id}>
-                            <strong>{item.name}</strong> ({item.type})
-                            {item.type === 'Weapon' && (
-                                <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                    Attack Bonus: +{getWeaponAttackBonus(character, item)}
-                                </span>
+                    {character.classes.map((cls, i) => (
+                        <li key={i}>
+                            <strong>{cls.name}</strong> (Level {cls.level})
+                            {classFeaturesByClass[cls.name] && (
+                                <div style={{ marginLeft: '1rem' }}>
+                                    {classFeaturesByClass[cls.name].unlocked.length > 0 && (
+                                        <>
+                                            <strong>Unlocked Features:</strong>
+                                            <ul>
+                                                {classFeaturesByClass[cls.name].unlocked.map(f => (
+                                                    <li key={`${f.name}-${f.level}`}>
+                                                        <strong>{f.name}</strong> (Lv {f.level}): {f.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )}
+                                    {classFeaturesByClass[cls.name].upcoming.length > 0 && (
+                                        <>
+                                            <strong>Upcoming Features:</strong>
+                                            <ul>
+                                                {classFeaturesByClass[cls.name].upcoming.map(f => (
+                                                    <li key={`${f.name}-${f.level}`}>
+                                                        <strong>{f.name}</strong> (Lv {f.level}): {f.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )}
+                                </div>
                             )}
                         </li>
                     ))}
                 </ul>
-            ) : (
-                <p>No items equipped.</p>
-            )}
+            </div>
 
-            <h3>Spells</h3>
-            {character.spells?.length ? (
-                <>
-                    <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
+            <div className="section">
+                <h3>Equipment</h3>
+                {character.items?.length ? (
                     <ul>
-                        {character.spells.map((spell, idx) => (
-                            <li key={idx}>{spell.name} ({spell.class})</li>
+                        {character.items.map((item) => (
+                            <li key={item._id}>
+                                <strong>{item.name}</strong> ({item.type})
+                                {item.type === 'Weapon' && (
+                                    <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                        Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                    </span>
+                                )}
+                            </li>
                         ))}
                     </ul>
-                </>
-            ) : (
-                <p>No spells selected.</p>
-            )}
+                ) : (
+                    <p>No items equipped.</p>
+                )}
+            </div>
 
+            <div className="section">
+                <h3>Spells</h3>
+                {character.spells?.length ? (
+                    <>
+                        <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
+                        <ul>
+                            {character.spells.map((spell, idx) => (
+                                <li key={idx}>{spell.name} ({spell.class})</li>
+                            ))}
+                        </ul>
+                    </>
+                ) : (
+                    <p>No spells selected.</p>
+                )}
+            </div>
 
-            <h2>Defense</h2>
-            <p><strong>AC:</strong> {getArmorClass(character)}</p>
+            <div className="section">
+                <h2>Defense</h2>
+                <p><strong>AC:</strong> {getArmorClass(character)}</p>
+            </div>
 
-            <h2>Stats</h2>
-            <ul>
-                {Object.entries(character.stats).map(([stat, value]) => {
-                    const mod = getModifier(value);
-                    return (
-                        <li key={stat}>
-                            <strong>{stat.toUpperCase()}:</strong> {value}
-                            <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                ({mod >= 0 ? '+' : ''}{mod})
-                            </span>
-                        </li>
-                    );
-                })}
-            </ul>
+            <div className="section">
+                <h2>Stats</h2>
+                <div className="stat-block">
+                    {Object.entries(character.stats).map(([stat, value]) => {
+                        const mod = getModifier(value);
+                        return (
+                            <div className="stat" key={stat}>
+                                {stat.toUpperCase()}
+                                <span>{value} ({mod >= 0 ? '+' : ''}{mod})</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
 
-            <h2>Proficiencies</h2>
-            {character.proficiencies ? (
-                Object.entries(allProficiencies).map(([type, list]) => {
-                    if (type === 'weapons') {
-                        const filteredWeapons = list.filter(prof => {
+            <div className="section">
+                <h2>Proficiencies</h2>
+                {character.proficiencies ? (
+                    Object.entries(allProficiencies).map(([type, list]) => {
+                        if (type === 'weapons') {
+                            const filteredWeapons = list.filter(prof => {
+                                if (classBasedProfs.weaponCategories.includes(prof)) return true;
 
-                            if (classBasedProfs.weaponCategories.includes(prof)) return true;
+                                const isNamed =
+                                    character.proficiencies?.weapons?.includes(prof) ||
+                                    classBasedProfs.namedWeapons.includes(prof);
 
-                            const isNamed =
-                                character.proficiencies?.weapons?.includes(prof) ||
-                                classBasedProfs.namedWeapons.includes(prof);
+                                if (!isNamed) return false;
 
-                            if (!isNamed) return false;
+                                const weaponEntry = allWeapons.find(w => w.weaponType === prof);
+                                const weaponCategory = weaponEntry?.weaponClass;
 
-                            const weaponEntry = allWeapons.find(w => w.weaponType === prof);
-                            const weaponCategory = weaponEntry?.weaponClass;
+                                if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
 
-                            if (weaponCategory && classBasedProfs.weaponCategories.includes(weaponCategory)) return false;
+                                return true;
+                            });
 
-                            return true;
-                        });
-
+                            return (
+                                <div key="weapons">
+                                    <strong>Weapons:</strong>
+                                    <ul className="inline-list">
+                                        {filteredWeapons.map(prof => (
+                                            <li key={prof} className="proficiency-chip selected">{prof}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            );
+                        }
 
                         return (
-                            <div key="weapons">
-                                <strong>Weapons:</strong>
-                                <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                                    {filteredWeapons.map(prof => (
-                                        <li
-                                            key={prof}
-                                            style={{
-                                                display: 'inline-block',
-                                                margin: '4px 8px 4px 0',
-                                                padding: '4px 8px',
-                                                borderRadius: '4px',
-                                                backgroundColor: '#4caf50',
-                                                color: 'white',
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            {prof}
-                                        </li>
-                                    ))}
+                            <div key={type}>
+                                <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
+                                <ul className="inline-list">
+                                    {list.map(prof => {
+                                        const isSelected =
+                                            character.proficiencies?.[type]?.includes(prof) ||
+                                            (type === 'armor' && classBasedProfs.armor.includes(prof));
+
+                                        const isSkill = type === 'skills';
+                                        const statKey = isSkill ? skillToStatMap[prof] : null;
+                                        const statValue = isSkill && statKey ? character.stats[statKey] : null;
+                                        const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
+                                        const hasExpertise = character.expertise?.includes(prof);
+                                        const totalMod = isSkill && statValue !== null
+                                            ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
+                                            : null;
+
+                                        return (
+                                            <li
+                                                key={prof}
+                                                className={`proficiency-chip${isSelected ? ' selected' : ''}`}
+                                            >
+                                                {prof}
+                                                {isSkill && statValue !== null && (
+                                                    <span>
+                                                        ({totalMod >= 0 ? '+' : ''}{totalMod})
+                                                    </span>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                             </div>
                         );
-                    }
+                    })
+                ) : (
+                    <p><em>No proficiencies selected.</em></p>
+                )}
+            </div>
 
-                    return (
-                        <div key={type}>
-                            <strong>{type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
-                            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                                {list.map(prof => {
-                                    const isSelected =
-                                        character.proficiencies?.[type]?.includes(prof) ||
-                                        (type === 'armor' && classBasedProfs.armor.includes(prof));
-
-                                    const isSkill = type === 'skills';
-                                    const statKey = isSkill ? skillToStatMap[prof] : null;
-                                    const statValue = isSkill && statKey ? character.stats[statKey] : null;
-                                    const baseMod = isSkill && statValue !== null ? getModifier(statValue) : null;
-                                    const hasExpertise = character.expertise?.includes(prof);
-                                    const totalMod = isSkill && statValue !== null
-                                        ? baseMod + (isSelected ? (hasExpertise ? profBonus * 2 : profBonus) : 0)
-                                        : null;
-
-                                    return (
-                                        <li
-                                            key={prof}
-                                            style={{
-                                                display: 'inline-block',
-                                                margin: '4px 8px 4px 0',
-                                                padding: '4px 8px',
-                                                borderRadius: '4px',
-                                                backgroundColor: isSelected ? '#4caf50' : '#eee',
-                                                color: isSelected ? 'white' : '#333',
-                                                fontWeight: isSelected ? 'bold' : 'normal',
-                                            }}
-                                        >
-                                            {prof}
-                                            {isSkill && statValue !== null && (
-                                                <span style={{ marginLeft: '6px', fontWeight: 'normal' }}>
-                                                    ({totalMod >= 0 ? '+' : ''}{totalMod})
-                                                </span>
-                                            )}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </div>
-                    );
-                })
-            ) : (
-                <p><em>No proficiencies selected.</em></p>
-            )}
-
-
-            <h2>Backstory</h2>
             {character.background && (
-                <>
+                <div className="section">
                     <h2>Background</h2>
                     <p><strong>{character.background}</strong></p>
-
                     {backgroundFeatures.length > 0 && (
                         <>
                             <h3>Background Features</h3>
@@ -352,17 +351,16 @@ const CharacterDetail = () => {
                             </ul>
                         </>
                     )}
-                </>
+                </div>
             )}
-            <p>{character.backstory || <em>No backstory provided</em>}</p>
 
-            <button onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/characters/${character._id}/edit`);
-            }}>Edit</button>
-            <button onClick={handleDelete}>Delete Character</button>
+            <div className="section">
+                <h2>Backstory</h2>
+                <p>{character.backstory || <em>No backstory provided</em>}</p>
+            </div>
         </div>
     );
+
 };
 
 export default CharacterDetail;
