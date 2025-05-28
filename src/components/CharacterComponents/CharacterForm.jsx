@@ -16,6 +16,7 @@ import {
     getClassBasedProficiencies
 } from '../../utils/characterUtils';
 
+
 const raceOptions = [
     'Human',
     'Elf',

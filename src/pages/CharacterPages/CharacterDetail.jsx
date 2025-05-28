@@ -15,6 +15,8 @@ import {
 } from '../../utils/characterUtils';
 import { ItemContext } from '../../context/item.context';
 import '../../CharacterDetails.css';
+import spellData from '../../../public/data/class_spells.json';
+import SpellCard from "../../components/SpellComponents/SpellCard";
 
 const CharacterDetail = () => {
     const { id } = useParams();
@@ -168,7 +170,7 @@ const CharacterDetail = () => {
                 <h2>Level</h2>
                 <p><strong>Total Level:</strong> {totalLevel}</p>
 
-            <p><strong>HP:</strong> {totalHP}</p>
+                <p><strong>HP:</strong> {totalHP}</p>
             </div>
 
             <div className="section">
@@ -209,7 +211,7 @@ const CharacterDetail = () => {
                     ))}
                 </ul>
 
-            <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
+                <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
             </div>
 
             <div className="section">
@@ -237,16 +239,23 @@ const CharacterDetail = () => {
                 {character.spells?.length ? (
                     <>
                         <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
-                        <ul>
-                            {character.spells.map((spell, idx) => (
-                                <li key={idx}>{spell.name} ({spell.class})</li>
-                            ))}
-                        </ul>
+                        <div className="spell-grid">
+                            {character.spells.map((spell, idx) => {
+                                const fullSpell = spellData[spell.class]?.find(s => s.name === spell.name);
+                                return fullSpell ? (
+                                    <SpellCard key={idx} spell={{ ...fullSpell, classes: [spell.class] }} />
+                                ) : (
+                                    <p key={idx}>Spell data not found for: {spell.name} ({spell.class})</p>
+                                );
+                            })}
+                        </div>
                     </>
                 ) : (
                     <p>No spells selected.</p>
                 )}
             </div>
+
+
             <div className="section">
                 <h2>Defense</h2>
                 <p><strong>AC:</strong> {getArmorClass(character)}</p>
