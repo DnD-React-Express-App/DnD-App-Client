@@ -23,7 +23,7 @@ function EditProfile() {
       <div>
         <h2>Edit Your Profile</h2>
         <UserForm
-          initialData={{ email: user.email, name: user.name }}
+          initialData={{ email: user.email, name: user.name, imageUrl: user.imageUrl }}
           onSubmit={handleUpdate}
           isEdit={true}
         />

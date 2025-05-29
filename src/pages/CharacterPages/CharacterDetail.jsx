@@ -147,6 +147,8 @@ const CharacterDetail = () => {
 
             <h1 className="character-title">{character.name}</h1>
 
+            <img src={character.imageUrl} alt="Character" style={{ width: '150px' }} />
+
             <div className="section">
                 <p>Race: {character.race} </p>
                 {speciesFeatures.length > 0 && (

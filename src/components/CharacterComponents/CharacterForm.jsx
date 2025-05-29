@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { ItemContext } from '../../context/item.context';
 import { createCharacter, updateCharacter } from '../../services/character.service';
+import { uploadImage } from '../../services/upload.service';
 import proficiencies from '../../../public/data/proficiencies.json';
 import ClassTab from './CharacterTabs/ClassTab';
 import SpeciesTab from './CharacterTabs/SpeciesTab';
@@ -57,6 +58,7 @@ const halfCasters = ['Paladin', 'Ranger'];
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const { items } = useContext(ItemContext);
 
+    const [uploading, setUploading] = useState(false);
     const [currentTab, setCurrentTab] = useState('Basics');
     const [armorOptions, setArmorOptions] = useState([]);
     const [weaponOptions, setWeaponOptions] = useState([]);
@@ -114,7 +116,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             }));
         }
     }, [initialData]);
-    
+
 
 
     useEffect(() => {
@@ -136,28 +138,28 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             }, {});
             setSelectedSpells(groupedSpells);
         }
-    
+
         // Prepopulate selected items
         if (initialData?.items?.length && items?.length) {
             const initialItemIds = initialData.items.map(item => item._id?.toString?.());
-    
+
             const armor = items.find(i =>
                 i.type === 'Armor' &&
                 i.armorCategory !== 'Shield' &&
                 initialItemIds.includes(i._id?.toString?.())
             );
-    
+
             const weapons = items.filter(i =>
                 i.type === 'Weapon' &&
                 initialItemIds.includes(i._id?.toString?.())
-              );
-    
+            );
+
             setSelectedArmor(armor || null);
             setSelectedWeapons(weapons);
         }
     }, [initialData, items.length]);
-    
-    
+
+
 
     useEffect(() => {
         (async () => {
@@ -295,6 +297,26 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
         });
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const res = await uploadImage(file);
+            setForm(prev => ({
+                ...prev,
+                imageUrl: res.data.imageUrl,
+            }));
+        } catch (err) {
+            console.error('Upload failed', err);
+            alert('Image upload failed.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -302,6 +324,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 ...form,
                 name: form.name,
                 race: form.race,
+                imageUrl: form.imageUrl,
                 stats: form.stats,
                 classes: form.classes,
                 level: form.level,
@@ -334,8 +357,8 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     const memoizedRemoveClass = useCallback(
         (index) => removeClass(setForm, index, form, setSelectedSpells),
         [setForm, form, setSelectedSpells]
-      );
-      
+    );
+
 
     return (
         <>
@@ -383,13 +406,27 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                 )}
 
                 {currentTab === 'Species' && (
-                    <SpeciesTab
-                        form={form}
-                        setForm={setForm}
-                        raceOptions={raceOptions}
-                        speciesFeatures={speciesFeatures}
-                        handleRaceChange={handleRaceChange}
-                    />
+                    <>
+                        <label>Character Image:</label>
+                        <input type="file" accept="image/*" onChange={handleImageUpload} />
+
+                        {uploading && <p>Uploading image...</p>}
+
+                        {form.imageUrl && (
+                            <img
+                                src={form.imageUrl}
+                                alt="Character Preview"
+                                style={{ maxWidth: '100px', marginTop: '10px' }}
+                            />
+                        )}
+                        <SpeciesTab
+                            form={form}
+                            setForm={setForm}
+                            raceOptions={raceOptions}
+                            speciesFeatures={speciesFeatures}
+                            handleRaceChange={handleRaceChange}
+                        />
+                    </>
                 )}
 
                 {currentTab === 'Stats' && (
