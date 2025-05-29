@@ -19,10 +19,11 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
         weaponProperties: checked
           ? [...current, value]
           : current.filter(p => p !== value),
-          damageTypes: weapon.damageTypes || [],
       };
     });
   };
+  
+  
 
   const handleDamageChange = (index, field, value) => {
     const updated = [...formData.damageTypes];
