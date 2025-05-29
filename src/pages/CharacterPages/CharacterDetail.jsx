@@ -17,6 +17,7 @@ import { ItemContext } from '../../context/item.context';
 import '../../CharacterDetails.css';
 import spellData from '../../../public/data/class_spells.json';
 import SpellCard from "../../components/SpellComponents/SpellCard";
+import ItemCard from '../../components/ItemComponents/ItemCard';
 import ClassFeatureDetail from '../../components/CharacterComponents/ClassFeatureDetail';
 import ExpandableSection from '../../components/ExpandableSection';
 
@@ -218,17 +219,20 @@ const CharacterDetail = () => {
                     <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
                     {character.items?.length ? (
                         <ul>
-                            {character.items.map((item) => (
-                                <li key={item._id}>
-                                    <strong>{item.name}</strong> ({item.type})
-                                    {item.type === 'Weapon' && (
-                                        <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                            Attack Bonus: +{getWeaponAttackBonus(character, item)}
-                                        </span>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
+                        {character.items.map((item) => (
+                          <li key={item._id}>
+                            <ItemCard item={item} />
+                            <p>
+                              {item.type === 'Weapon' && (
+                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                  Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                </span>
+                              )}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                      
                     ) : (
                         <p>No items equipped.</p>
                     )}
