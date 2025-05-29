@@ -150,7 +150,7 @@ const CharacterDetail = () => {
             <img src={character.imageUrl} alt="Character" style={{ width: '150px' }} />
 
             <div className="section">
-                <p>Race: {character.race} </p>
+                <p>Species: {character.race} </p>
                 {speciesFeatures.length > 0 && (
                     <>
                         <h3>Species Features</h3>
@@ -172,7 +172,7 @@ const CharacterDetail = () => {
             </div>
 
             <div className="section">
-                <ExpandableSection title="Classes">
+                <ExpandableSection title="Class Features">
                     <ul>
                         {character.classes.map((cls, i) => (
                             <li key={i}>
