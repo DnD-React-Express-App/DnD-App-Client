@@ -19,6 +19,7 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
         weaponProperties: checked
           ? [...current, value]
           : current.filter(p => p !== value),
+          damageTypes: weapon.damageTypes || [],
       };
     });
   };
@@ -35,13 +36,13 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
   const addDamageField = () => {
     setFormData(prev => ({
       ...prev,
-      damage: [...(prev.damageTypes || []), { dieAmount: 1, dieType: 'd6', damageType: '' }]
+      damageTypes: [...(prev.damageTypes || []), { dieAmount: 1, dieType: 'd6', damageType: '' }]
     }));
   };
 
   const removeDamageField = (index) => {
     setFormData(prev => {
-      const updated = [...prev.damage];
+      const updated = [...(prev.damageTypes || [])];
       updated.splice(index, 1);
       return {
         ...prev,
@@ -109,14 +110,12 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
               min="1"
               value={entry.dieAmount}
               onChange={(e) => handleDamageChange(index, "dieAmount", e.target.value)}
-              required
             />
 
             <label>Die Type:</label>
             <select
               value={entry.dieType}
               onChange={(e) => handleDamageChange(index, "dieType", e.target.value)}
-              required
             >
               <option value="">Choose Die</option>
               <option value="d4">d4</option>
@@ -130,7 +129,6 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
             <select
               value={entry.damageType}
               onChange={(e) => handleDamageChange(index, "damageType", e.target.value)}
-              required
             >
               <option value="">Choose Type</option>
               {damageTypes.map(type => (
