@@ -1,10 +1,11 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/auth.context';
-import CharacterCard from '../../components/CharacterComponents/CharacterCard'; // or CharacterList if you prefer
 import { useNavigate } from 'react-router-dom';
+import CharacterList from '../../components/CharacterComponents/CharacterList';
 import {
     getSharedCharacters,
     saveSharedCharacter,
+    getCharacters
 } from '../../services/character.service';
 
 function SharedCharacters() {
@@ -12,31 +13,44 @@ function SharedCharacters() {
     const [sharedCharacters, setSharedCharacters] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(true);
-    const [savedIds, setSavedIds] = useState([]);
-
-    const navigate = useNavigate();
+    const [savedCharacterIds, setSavedCharacterIds] = useState(new Set());
 
     useEffect(() => {
-        getSharedCharacters()
-            .then(res => setSharedCharacters(res.data))
-            .catch(err => {
-                console.error('Failed to fetch shared characters:', err);
-                setErrorMessage('Could not load shared characters');
-            })
-            .finally(() => setLoading(false));
-    }, []);
-    
+        const fetchData = async () => {
+          try {
+            // 1. Fetch user's saved characters
+            const userChars = await getCharacters();
+            const originals = userChars.data
+              .filter(c => c.originalCharacterId)
+              .map(c => c.originalCharacterId);
+            setSavedCharacterIds(new Set(originals));
+      
+            // 2. Fetch shared characters
+            const sharedChars = await getSharedCharacters();
+            setSharedCharacters(sharedChars.data);
+          } catch (err) {
+            console.error('Failed to load characters:', err);
+            setErrorMessage('Could not load characters.');
+          } finally {
+            setLoading(false); 
+          }
+        };
+      
+        fetchData();
+      }, []);
 
-    const handleSave = async (id) => {
+      const handleSave = async (id) => {
         try {
-            await saveSharedCharacter(id);
-            alert('Character saved to your list!');
+          await saveSharedCharacter(id);
+          alert('Character saved to your list!');
+          setSavedCharacterIds(prev => new Set(prev).add(id)); 
         } catch (err) {
-            console.error(err);
-            alert(err.response?.data?.message || 'Error saving character.');
+          console.error(err);
+          alert(err.response?.data?.message || 'Error saving character.');
         }
-    };
-
+      };
+      
+      
 
     if (!isLoggedIn) return <p>You must be logged in to view shared characters.</p>;
     if (isLoading || loading) return <p>Loading shared characters...</p>;
@@ -46,27 +60,13 @@ function SharedCharacters() {
             <h2>Community Characters</h2>
             {errorMessage && <p className="error">{errorMessage}</p>}
 
-            <div className="character-list">
-                {sharedCharacters.length === 0 ? (
-                    <p>No shared characters found.</p>
-                ) : (
-                    sharedCharacters.map(character => (
-                        <div key={character._id} className="card">
-                            <CharacterCard character={character} />
+            <CharacterList
+                characters={sharedCharacters}
+                onSave={handleSave}
+                currentUserId={user._id}
+                savedCharacterIds={savedCharacterIds}
+            />
 
-                            <p style={{ fontSize: '0.9rem', color: 'gray' }}>
-                                Created by: {character.user?.name || 'Unknown'}
-                            </p>
-
-                            {character.user?._id !== user?._id && (
-                                <button onClick={() => handleSave(character._id)}>
-                                    Save to My Characters
-                                </button>
-                            )}
-                        </div>
-                    ))
-                )}
-            </div>
         </div>
     );
 }

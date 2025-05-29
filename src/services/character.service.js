@@ -30,9 +30,9 @@ export const getSharedCharacters = () => {
   return API.get('/characters/global-characters');
 };
 
-// Share a character (mark it as shared)
-export const shareCharacter = (id, extraData = {}) => {
-  return API.put(`/characters/${id}/share`, extraData);
+// Toggle a character's share status
+export const toggleSharedCharacter = (id, newSharedValue) => {
+  return API.put(`/characters/${id}/share`, { shared: newSharedValue });
 };
 
 // Save a shared character to your own list (clones it)

@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/auth.context';
-import { getCharacters } from '../../services/character.service';
+import { getCharacters, toggleSharedCharacter } from '../../services/character.service';
 import CharacterList from '../../components/CharacterComponents/CharacterList';
 import CharacterForm from '../../components/CharacterComponents/CharacterForm';
 
@@ -32,6 +32,12 @@ function Characters() {
     setShowForm(false);
   };
 
+  const handleShare = (updatedCharacter) => {
+    setCharacters(prev =>
+      prev.map(char => char._id === updatedCharacter._id ? updatedCharacter : char)
+    );
+  }; 
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -44,9 +50,9 @@ function Characters() {
       activeClassTabs.length === 0
         ? true
         : activeClassTabs.every(selectedClass =>
-            char.classes.some(c => c.name === selectedClass)
-          )
-    )    
+          char.classes.some(c => c.name === selectedClass)
+        )
+    )
 
   if (isLoading) return <p>Loading...</p>;
   if (!isLoggedIn) return <p>You must be logged in to view characters.</p>;
@@ -119,6 +125,9 @@ function Characters() {
           {/* Character List */}
           <CharacterList
             characters={filteredCharacters}
+            onEdit={(id) => navigate(`/characters/edit/${id}`)}
+            onShare={handleShare}
+            currentUserId={user._id}
             onDelete={(deletedId) =>
               setCharacters((prev) => prev.filter((c) => c._id !== deletedId))
             }
