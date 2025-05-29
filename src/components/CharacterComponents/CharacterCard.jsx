@@ -25,21 +25,41 @@ const CharacterCard = ({ character, onDelete }) => {
 
     return (
         <div className="card" onClick={handleClick} style={{ cursor: 'pointer' }}>
-            <h2>{character.name}</h2>
-            <p><strong>Race:</strong> {character.race}</p>
-            <p><strong>Level:</strong> {
-                character.classes.reduce((total, c) => total + c.level, 0)
-            }</p>
-            <p><strong>Class:</strong> {character.classes.map(c => `${c.name} (${c.level})`).join(', ')}</p>
-            <p><strong>STR:</strong> {character.stats.strength}</p>
-            <button onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/characters/${character._id}/edit`);
-            }}>Edit</button>
-            {onDelete && (
-                <button onClick={handleDelete}>Delete</button>
-            )}
-        </div>
+    <h2>{character.name}</h2>
+    <div
+      style={{
+        width: '250px',
+        height: '250px',
+        overflow: 'hidden',
+        borderRadius: '8px',
+        margin: '0 auto',
+      }}
+    >
+      <img
+        src={character.imageUrl}
+        alt="Character"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center center',
+          display: 'block',
+        }}
+      />
+    </div>
+    <p><strong>Race:</strong> {character.race}</p>
+    <p><strong>Level:</strong> {
+      character.classes.reduce((total, c) => total + c.level, 0)
+    }</p>
+    <p><strong>Class:</strong> {character.classes.map(c => `${c.name} (${c.level})`).join(', ')}</p>
+    <button onClick={(e) => {
+      e.stopPropagation();
+      navigate(`/characters/${character._id}/edit`);
+    }}>Edit</button>
+    {onDelete && (
+      <button onClick={handleDelete}>Delete</button>
+    )}
+  </div>
     );
 };
 
