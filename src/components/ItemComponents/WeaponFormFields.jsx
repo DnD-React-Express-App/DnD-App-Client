@@ -24,18 +24,18 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
   };
 
   const handleDamageChange = (index, field, value) => {
-    const updated = [...formData.damage];
+    const updated = [...formData.damageTypes];
     updated[index][field] = field === "dieAmount" ? Number(value) : value;
     setFormData(prev => ({
       ...prev,
-      damage: updated,
+      damageTypes: updated,
     }));
   };
 
   const addDamageField = () => {
     setFormData(prev => ({
       ...prev,
-      damage: [...(prev.damage || []), { dieAmount: 1, dieType: 'd6', damageType: '' }]
+      damage: [...(prev.damageTypes || []), { dieAmount: 1, dieType: 'd6', damageType: '' }]
     }));
   };
 
@@ -45,12 +45,12 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
       updated.splice(index, 1);
       return {
         ...prev,
-        damage: updated,
+        damageTypes: updated,
       };
     });
   };
 
-  const damagePreview = (formData.damage || [])
+  const damagePreview = (formData.damageTypes || [])
     .filter(d => d.dieAmount && d.dieType && d.damageType)
     .map(d => `${d.dieAmount}${d.dieType} ${d.damageType}`)
     .join(' + ');
@@ -101,7 +101,7 @@ function WeaponFormFields({ formData, handleChange, setFormData }) {
 
       <fieldset>
         <legend>Damage Profiles:</legend>
-        {(formData.damage || []).map((entry, index) => (
+        {(formData.damageTypes || []).map((entry, index) => (
           <div key={index} style={{ marginBottom: '1rem', padding: '0.5rem', border: '1px solid #ccc' }}>
             <label>Die Amount:</label>
             <input
