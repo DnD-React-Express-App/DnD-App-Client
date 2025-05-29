@@ -24,24 +24,13 @@ function ItemCard({ item }) {
       onClick={toggleExpand}
     >
       <h3 className="text-lg font-bold">
-        <Link
-          to={`/items/${item._id}`}
-          onClick={e => e.stopPropagation()} // prevent toggle on link click
-        >
           {item.name}
-        </Link>
       </h3>
 
       {/* Collapsed View */}
       {item.type === 'Weapon' && renderDamage()}
       {item.type === 'Armor' && item.armorClassBase && (
-        <p><strong>AC:</strong> {item.armorClassBase}</p>
-      )}
-      {item.type === 'Weapon' && item.weaponProperties?.length > 0 && (
-        <p><strong>Mastery:</strong> {item.weaponMastery}</p>
-      )}
-      {item.type === 'Armor' && item.armorType && (
-        <p><strong>Armor Type:</strong> {item.armorType}</p>
+        <p><strong>Base AC:</strong> {item.armorClassBase}</p>
       )}
 
       {/* Expanded View */}
@@ -49,9 +38,22 @@ function ItemCard({ item }) {
         <>
           <p><strong>Type:</strong> {item.type}</p>
           <p><strong>Rarity:</strong> {item.rarity}</p>
+
           {item.description && <p>{item.description}</p>}
+          
           {item.type === 'Weapon' && item.weaponProperties?.length > 0 && (
+            <>
             <p><strong>Properties:</strong> {item.weaponProperties.join(', ')}</p>
+            <p><strong>Mastery:</strong> {item.weaponMastery}</p>
+            </>
+          )}
+          {item.type === 'Armor' && item.armorType && (
+            <>
+            {item.dexModifierCap !== null && <p><strong>Dex Cap:</strong> {item.dexModifierCap}</p>}
+            {(item.dexModifierCap && item.usesDexModifier) === null && <p><strong>Dex Cap:</strong> No cap</p>}
+            <p><strong>Dex Modifier:</strong> {item.usesDexModifier ? 'Yes' : 'No'}</p>
+            <p><strong>Armor Type:</strong> {item.armorType}</p>
+            </>
           )}
         </>
       )}

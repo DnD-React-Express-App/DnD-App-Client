@@ -8,6 +8,7 @@ import {
     getTotalLevel,
     skillToStatMap,
     getWeaponAttackBonus,
+    getWeaponDamageBonus,
     getArmorClass,
     getClassBasedProficiencies,
     calculateSpellAttack,
@@ -18,6 +19,7 @@ import { ItemContext } from '../../context/item.context';
 import '../../CharacterDetails.css';
 import spellData from '../../../public/data/class_spells.json';
 import SpellCard from "../../components/SpellComponents/SpellCard";
+import ItemCard from '../../components/ItemComponents/ItemCard';
 import ClassFeatureDetail from '../../components/CharacterComponents/ClassFeatureDetail';
 import ExpandableSection from '../../components/ExpandableSection';
 
@@ -225,15 +227,23 @@ const CharacterDetail = () => {
                         <ul>
                             {character.items.map((item) => (
                                 <li key={item._id}>
-                                    <strong>{item.name}</strong> ({item.type})
-                                    {item.type === 'Weapon' && (
-                                        <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                            Attack Bonus: +{getWeaponAttackBonus(character, item)}
-                                        </span>
-                                    )}
+                                    <ItemCard item={item} />
+                                    <p>
+                                        {item.type === 'Weapon' && (
+                                            <>
+                                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                                    Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                                </span>
+                                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                                    Damage Bonus: +{getWeaponDamageBonus(character, item)}
+                                                </span>
+                                            </>
+                                        )}
+                                    </p>
                                 </li>
                             ))}
                         </ul>
+
                     ) : (
                         <p>No items equipped.</p>
                     )}
