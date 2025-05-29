@@ -24,3 +24,19 @@ export const updateCharacter = (id, data) => {
 export const deleteCharacter = (id) => {
   return API.delete(`/characters/${id}`);
 };
+
+// Get all shared characters (visible to everyone)
+export const getSharedCharacters = () => {
+  return API.get('/characters/global-characters');
+};
+
+// Share a character (mark it as shared)
+export const shareCharacter = (id, extraData = {}) => {
+  return API.put(`/characters/${id}/share`, extraData);
+};
+
+// Save a shared character to your own list (clones it)
+export const saveSharedCharacter = (id) => {
+  return API.post(`/characters/${id}/save`);
+};
+

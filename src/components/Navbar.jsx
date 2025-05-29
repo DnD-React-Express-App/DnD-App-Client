@@ -19,7 +19,8 @@ function Navbar() {
         {/* LEFT side - only show on large screens */}
         <div className="Navbar-left desktop-only">
           <NavLink to="/">Home</NavLink>
-          {isLoggedIn && <NavLink to="/characters">Characters</NavLink>}
+          <NavLink to="/shared-characters">Characters</NavLink>
+          {isLoggedIn && <NavLink to="/characters">My Characters</NavLink>}
           {isLoggedIn && <NavLink to="/items">Items</NavLink>}
           {isLoggedIn && <NavLink to="/spells">Spells</NavLink>}
         </div>

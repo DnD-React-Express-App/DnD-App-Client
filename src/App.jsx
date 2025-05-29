@@ -13,6 +13,7 @@ import Characters from './pages/CharacterPages/Characters';
 import CharacterCreate from './pages/CharacterPages/CharacterCreate';
 import CharacterDetail from './pages/CharacterPages/CharacterDetail';
 import EditCharacter from './pages/CharacterPages/EditCharacter';
+import SharedCharacters from './pages/CharacterPages/SharedCharacters';
 
 import Items from './pages/ItemPages/Items';
 import ItemDetailsPage from './pages/ItemPages/ItemDetailsPage';
@@ -41,6 +42,7 @@ function App() {
           <Route path="/characters/create" element={<CharacterCreate />} />
           <Route path="/characters/:id" element={<CharacterDetail />} />
           <Route path="/characters/:id/edit" element={<EditCharacter />} />
+          <Route path="/shared-characters" element={<SharedCharacters />} />
 
           <Route path="/items" element={<Items />} />
           <Route path="/items/create" element={<CreateItem />} />
