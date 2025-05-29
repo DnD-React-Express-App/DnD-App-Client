@@ -8,6 +8,7 @@ import {
     getTotalLevel,
     skillToStatMap,
     getWeaponAttackBonus,
+    getWeaponDamageBonus,
     getArmorClass,
     getClassBasedProficiencies,
     calculateSpellSaveDC,
@@ -219,20 +220,25 @@ const CharacterDetail = () => {
                     <p><strong>Initiative:</strong> {getModifier(character.stats.dexterity) >= 0 ? '+' : ''}{getModifier(character.stats.dexterity)}</p>
                     {character.items?.length ? (
                         <ul>
-                        {character.items.map((item) => (
-                          <li key={item._id}>
-                            <ItemCard item={item} />
-                            <p>
-                              {item.type === 'Weapon' && (
-                                <span style={{ marginLeft: '8px', color: 'gray' }}>
-                                  Attack Bonus: +{getWeaponAttackBonus(character, item)}
-                                </span>
-                              )}
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                      
+                            {character.items.map((item) => (
+                                <li key={item._id}>
+                                    <ItemCard item={item} />
+                                    <p>
+                                        {item.type === 'Weapon' && (
+                                            <>
+                                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                                    Attack Bonus: +{getWeaponAttackBonus(character, item)}
+                                                </span>
+                                                <span style={{ marginLeft: '8px', color: 'gray' }}>
+                                                    Damage Bonus: +{getWeaponDamageBonus(character, item)}
+                                                </span>
+                                            </>
+                                        )}
+                                    </p>
+                                </li>
+                            ))}
+                        </ul>
+
                     ) : (
                         <p>No items equipped.</p>
                     )}
@@ -358,21 +364,21 @@ const CharacterDetail = () => {
             {character.background && (
                 <div className="section">
                     <ExpandableSection title="Background">
-                    {backgroundFeatures.length > 0 && (
-                        <>
-                            <p><strong>{character.background}</strong></p>
-                            <ul>
-                                {backgroundFeatures.map((feature, index) => (
-                                    <li key={feature._id || feature.name || index}>
-                                        <strong>{feature.name}:</strong> {feature.description}
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
+                        {backgroundFeatures.length > 0 && (
+                            <>
+                                <p><strong>{character.background}</strong></p>
+                                <ul>
+                                    {backgroundFeatures.map((feature, index) => (
+                                        <li key={feature._id || feature.name || index}>
+                                            <strong>{feature.name}:</strong> {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
 
-                    <h2>Backstory</h2>
-                    <p>{character.backstory || <em>No backstory provided</em>}</p>
+                        <h2>Backstory</h2>
+                        <p>{character.backstory || <em>No backstory provided</em>}</p>
                     </ExpandableSection>
                 </div>
             )}

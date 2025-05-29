@@ -146,6 +146,27 @@ export const classProficiencies = {
   
     return statMod + (isProficient ? profBonus : 0);
   };
+
+  export const getWeaponDamageBonus = (character, weapon) => {
+    const stats = character.stats || {};
+    const strMod = getModifier(stats.strength || 10);
+    const dexMod = getModifier(stats.dexterity || 10);
+  
+    const properties = weapon.weaponProperties || [];
+    const isFinesse = properties.includes('Finesse');
+    const isRanged = weapon.weaponRangeCategory === 'Ranged';
+  
+    let statMod = isRanged ? dexMod : isFinesse ? Math.max(strMod, dexMod) : strMod;
+  
+    const classProfs = getClassBasedProficiencies(character.classes || []);
+  
+    const isProficient =
+      classProfs.weaponCategories.includes(weapon.weaponClass) ||
+      classProfs.namedWeapons.includes(weapon.weaponType) ||
+      classProfs.namedWeapons.includes(weapon.name);
+  
+    return statMod;
+  };
   
   export const getArmorClass = (character) => {
     const dexMod = getModifier(character.stats?.dexterity || 10);
