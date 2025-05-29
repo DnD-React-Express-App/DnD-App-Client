@@ -10,8 +10,11 @@ Here you can find the backend to the application: https://github.com/DnD-React-E
 ## Instructions to run locally
 
 Clone the repository -> git clone
+
 Install dependencies -> npm install
+
 create a .env file containing VITE_API_URL=http://localhost:5005/api
+
 Run the applications -> npm run dev
 
 ## Demo
