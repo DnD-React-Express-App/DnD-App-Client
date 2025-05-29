@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpellCard from "./SpellCard";
 import '../../List.css'
-import CustomSpellCard from "./CustomSpellCard";
 
 const SpellList = () => {
   const [spells, setSpells] = useState([]);
@@ -15,12 +14,12 @@ const SpellList = () => {
   useEffect(() => {
     const fetchSpells = async () => {
       try {
-        const resJson = await fetch("/data/class_spells.json");
-        const dataJson = await resJson.json();
+        const res = await fetch("/data/class_spells.json");
+        const data = await res.json();
 
         const spellMap = new Map();
 
-        for (const [className, classSpells] of Object.entries(dataJson)) {
+        for (const [className, classSpells] of Object.entries(data)) {
           for (const spell of classSpells) {
             const key = spell.name.toLowerCase();
 
@@ -28,7 +27,6 @@ const SpellList = () => {
               spellMap.set(key, {
                 ...spell,
                 classes: [className],
-                isCustom: false,
               });
             } else {
               spellMap.get(key).classes.push(className);
@@ -36,19 +34,9 @@ const SpellList = () => {
           }
         }
 
-        const resCustom = await fetch("/api/spells");
-        const customSpells = await resCustom.json();
-
-        customSpells.forEach(spell => {
-          spell.isCustom = true;
-          spellMap.set(spell._id, spell);
-        });
-
-        const combinedSpells = Array.from(spellMap.values());
-
-        setSpells(combinedSpells);
-        setFilteredSpells(combinedSpells);
-
+        const spellArray = Array.from(spellMap.values());
+        setSpells(spellArray);
+        setFilteredSpells(spellArray);
       } catch (err) {
         console.error("Failed to load spells:", err);
       }
@@ -117,13 +105,9 @@ const SpellList = () => {
       </div>
 
       <div className="list">
-        {filteredSpells.map((spell, index) =>
-          spell.isCustom ? (
-            <CustomSpellCard key={`custom-${spell._id || index}`} spell={spell} />
-          ) : (
-            <SpellCard key={`json-${spell.name}-${index}`} spell={spell} />
-          )
-        )}
+        {filteredSpells.map((spell, index) => (
+          <SpellCard key={index} spell={spell} />
+        ))}
       </div>
     </div>
   );

@@ -47,7 +47,7 @@ const SpellCard = ({ spell, selected = false, onSelect = null }) => {
 
       <h2>{spell.name}</h2>
       <p>
-        Level {spell.level === 0 ? "Cantrip" : spell.level} {spell.school} {isExpanded ? "▲" : "▼"}
+        Level {spell.level === 0 ? "Cantrip" : spell.level} {spell.school}
       </p>
 
       {isExpanded && (
