@@ -46,10 +46,20 @@ function ItemForm({ initialData = {}, onSubmit }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const dataToSubmit = {
+        let dataToSubmit = {
             ...formData,
             weight: formData.weight ? Number(formData.weight) : undefined,
         };
+
+        if (formData.type === 'Weapon' && formData.damageTypes?.length) {
+            dataToSubmit = {
+              ...dataToSubmit,
+              damageTypes: formData.damageTypes.map(d => ({
+                type: d.damageType,
+                die: `${d.dieAmount}${d.dieType}`
+              }))
+            };
+          }
 
         onSubmit(dataToSubmit).catch((err) => {
             const msg = err.response?.data?.error || 'Item save failed.';
