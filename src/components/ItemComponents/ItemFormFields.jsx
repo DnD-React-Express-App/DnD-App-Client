@@ -11,8 +11,9 @@ function ItemForm({ initialData = {}, onSubmit }) {
         armorType: '',
         weight: '',
         weaponProperties: [],
-      };
-      
+        damageTypes: [],
+    };
+
 
     const [formData, setFormData] = useState(blankItem);
     const [errorMessage, setErrorMessage] = useState('');
@@ -73,10 +74,10 @@ function ItemForm({ initialData = {}, onSubmit }) {
 
             {formData.type === 'Weapon' && (
                 <WeaponFormFields
-                formData={formData}
-                handleChange={handleChange}
-                setFormData={setFormData} // ✅ Pass this
-              />
+                    formData={formData}
+                    handleChange={handleChange}
+                    setFormData={setFormData}
+                />
             )}
 
             <label>Description:</label>

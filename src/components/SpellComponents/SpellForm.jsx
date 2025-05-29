@@ -22,6 +22,11 @@ const ATTACK_SAVE_OPTIONS = [
   'INT Save', 'WIS Save', 'CHA Save'
 ];
 
+const DAMAGE_DIE_OPTIONS = [
+  '',
+  'd4', 'd6', 'd8', 'd10', 'd12'
+]
+
 const DAMAGE_EFFECT_OPTIONS = [
   '', 
   'Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force',
@@ -43,6 +48,8 @@ function SpellForm({ initialData = {}, onSubmit, isEdit = false }) {
     description: '',
     attackSave: '',
     damageEffect: '',
+    dieAmount: 0,
+    damageDie: '',
     ...initialData,
   });
 
@@ -123,6 +130,16 @@ function SpellForm({ initialData = {}, onSubmit, isEdit = false }) {
       <label>Attack / Save:</label>
       <select name="attackSave" value={formData.attackSave} onChange={handleChange}>
         {ATTACK_SAVE_OPTIONS.map(option => (
+          <option key={option} value={option}>{option}</option>
+        ))}
+      </select>
+
+      <label>Die Amount:</label>
+      <input name="dieAmount" type="number" value={formData.dieAmount} onChange={handleChange} />
+
+      <label>Damage Die:</label>
+      <select name="damageDie" value={formData.damageDie} onChange={handleChange}>
+        {DAMAGE_DIE_OPTIONS.map(option => (
           <option key={option} value={option}>{option}</option>
         ))}
       </select>
