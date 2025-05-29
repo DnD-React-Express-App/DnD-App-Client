@@ -1,24 +1,390 @@
 {
+  "Human": {
+    "abilities": [
+      {
+        "name": "Ability Score Increase",
+        "description": "Your ability scores each increase by 1."
+      },
+      {
+        "name": "Languages",
+        "description": "You can speak, read, and write Common and one extra language of your choice."
+      }
+    ],
+    "key": "human"
+  },
   "Elf": {
     "abilities": [
       {
         "name": "Darkvision",
-        "description": "You can see in the dark up to 60 feet."
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
       },
       {
         "name": "Keen Senses",
         "description": "You have proficiency in the Perception skill."
+      },
+      {
+        "name": "Fey Ancestry",
+        "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
+      },
+      {
+        "name": "Trance",
+        "description": "Elves meditate deeply for 4 hours a day instead of sleeping."
       }
     ],
     "key": "elf"
   },
+  "Half-Elf": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Fey Ancestry",
+        "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
+      },
+      {
+        "name": "Skill Versatility",
+        "description": "You gain proficiency in two skills of your choice."
+      },
+      {
+        "name": "Ability Score Increase",
+        "description": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1."
+      }
+    ],
+    "key": "half-elf"
+  },
   "Dwarf": {
     "abilities": [
       {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
         "name": "Dwarven Resilience",
-        "description": "You have advantage on saving throws against poison."
+        "description": "Advantage on saving throws against poison, and resistance to poison damage."
+      },
+      {
+        "name": "Dwarven Combat Training",
+        "description": "Proficiency with battleaxe, handaxe, light hammer, and warhammer."
+      },
+      {
+        "name": "Tool Proficiency",
+        "description": "Proficiency with one artisan’s tool: smith’s tools, brewer’s supplies, or mason’s tools."
+      },
+      {
+        "name": "Stonecunning",
+        "description": "Double proficiency bonus on History checks related to stonework."
       }
     ],
     "key": "dwarf"
+  },
+  "Halfling": {
+    "abilities": [
+      {
+        "name": "Lucky",
+        "description": "When you roll a 1 on d20 for an attack, ability check, or saving throw, reroll and use the new roll."
+      },
+      {
+        "name": "Brave",
+        "description": "Advantage on saving throws against being frightened."
+      },
+      {
+        "name": "Halfling Nimbleness",
+        "description": "Can move through the space of creatures larger than you."
+      }
+    ],
+    "key": "halfling"
+  },
+  "Gnome": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Gnome Cunning",
+        "description": "Advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
+      }
+    ],
+    "key": "gnome"
+  },
+  "Half-Orc": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Relentless Endurance",
+        "description": "When reduced to 0 HP but not killed outright, drop to 1 HP instead (once per long rest)."
+      },
+      {
+        "name": "Savage Attacks",
+        "description": "When scoring a critical hit with melee weapon, roll one extra weapon damage die."
+      }
+    ],
+    "key": "half-orc"
+  },
+  "Dragonborn": {
+    "abilities": [
+      {
+        "name": "Draconic Ancestry",
+        "description": "You have a breath weapon and damage resistance based on your dragon ancestry."
+      },
+      {
+        "name": "Breath Weapon",
+        "description": "You can use your action to exhale destructive energy in a 15-ft cone or 30-ft line (based on ancestry), usable once per short/long rest."
+      },
+      {
+        "name": "Damage Resistance",
+        "description": "You have resistance to the damage type associated with your draconic ancestry."
+      }
+    ],
+    "key": "dragonborn"
+  },
+  "Tiefling": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Hellish Resistance",
+        "description": "Resistance to fire damage."
+      },
+      {
+        "name": "Infernal Legacy",
+        "description": "Know thaumaturgy cantrip. At level 3, can cast hellish rebuke once per day. At level 5, can cast darkness once per day."
+      }
+    ],
+    "key": "tiefling"
+  },
+  "Aasimar": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Celestial Resistance",
+        "description": "Resistance to necrotic and radiant damage."
+      },
+      {
+        "name": "Healing Hands",
+        "description": "As an action, touch a creature to heal HP equal to your level (once per long rest)."
+      },
+      {
+        "name": "Light Bearer",
+        "description": "Know the thaumaturgy cantrip."
+      }
+    ],
+    "key": "aasimar"
+  },
+  "Genasi": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light."
+      },
+      {
+        "name": "Elemental Resistance",
+        "description": "Resistance to acid (Earth), lightning (Air), fire (Fire), or cold (Water) damage depending on subtype."
+      },
+      {
+        "name": "Unending Breath",
+        "description": "Can hold breath indefinitely while not incapacitated."
+      }
+    ],
+    "key": "genasi"
+  },
+  "Goliath": {
+    "abilities": [
+      {
+        "name": "Natural Athlete",
+        "description": "Proficiency in Athletics skill."
+      },
+      {
+        "name": "Stone’s Endurance",
+        "description": "Once per short rest, reduce damage dealt to you by 1d12 + Constitution modifier."
+      },
+      {
+        "name": "Powerful Build",
+        "description": "Count as one size larger when determining carrying capacity and push/pull/drag limits."
+      },
+      {
+        "name": "Mountain Born",
+        "description": "Resistance to cold damage and acclimated to high altitude."
+      }
+    ],
+    "key": "goliath"
+  },
+  "Tabaxi": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "See in dim light within 60 feet as bright light, and in darkness as dim light."
+      },
+      {
+        "name": "Feline Agility",
+        "description": "Double your speed for one turn, usable again after moving 0 feet on a turn."
+      },
+      {
+        "name": "Cat’s Claws",
+        "description": "Claws are natural weapons, dealing 1d4 slashing damage."
+      },
+      {
+        "name": "Cat’s Talent",
+        "description": "Proficiency in Perception and Stealth skills."
+      }
+    ],
+    "key": "tabaxi"
+  },
+  "Triton": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "See in dim light within 60 feet as bright light, and in darkness as dim light."
+      },
+      {
+        "name": "Amphibious",
+        "description": "Can breathe air and water."
+      },
+      {
+        "name": "Control Air and Water",
+        "description": "You know the fog cloud, gust of wind, and wall of water spells once per long rest."
+      },
+      {
+        "name": "Emissary of the Sea",
+        "description": "You can communicate simple ideas with beasts that can breathe water."
+      }
+    ],
+    "key": "triton"
+  },
+  "Firbolg": {
+    "abilities": [
+      {
+        "name": "Firbolg Magic",
+        "description": "You can cast detect magic and disguise self once per short or long rest."
+      },
+      {
+        "name": "Hidden Step",
+        "description": "As a bonus action, become invisible until the start of your next turn once per short/long rest."
+      },
+      {
+        "name": "Powerful Build",
+        "description": "Count as one size larger for carrying capacity and push/pull/drag."
+      },
+      {
+        "name": "Speech of Beast and Leaf",
+        "description": "You can communicate with beasts and plants."
+      }
+    ],
+    "key": "firbolg"
+  },
+  "Kenku": {
+    "abilities": [
+      {
+        "name": "Expert Forgery",
+        "description": "You can duplicate other handwriting and craftwork perfectly."
+      },
+      {
+        "name": "Kenku Training",
+        "description": "Proficiency in two skills or tools from among Acrobatics, Deception, Stealth, and Sleight of Hand."
+      },
+      {
+        "name": "Mimicry",
+        "description": "You can mimic any sounds you have heard."
+      },
+      {
+        "name": "Flightless",
+        "description": "Cannot fly, despite having wings."
+      }
+    ],
+    "key": "kenku"
+  },
+  "Lizardfolk": {
+    "abilities": [
+      {
+        "name": "Bite",
+        "description": "Natural weapon that deals 1d6 + Strength piercing damage."
+      },
+      {
+        "name": "Cunning Artisan",
+        "description": "Can craft simple items from slain creatures' remains."
+      },
+      {
+        "name": "Hold Breath",
+        "description": "Can hold breath for up to 15 minutes."
+      },
+      {
+        "name": "Natural Armor",
+        "description": "Base AC is 13 + Dexterity modifier."
+      },
+      {
+        "name": "Hungry Jaws",
+        "description": "Once per short rest, as a bonus action, make a special bite attack that grants temporary HP."
+      }
+    ],
+    "key": "lizardfolk"
+  },
+  "Goblin": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "See in dim light within 60 feet as bright light, and in darkness as dim light."
+      },
+      {
+        "name": "Fury of the Small",
+        "description": "Once per short rest, add extra damage equal to your level when attacking a creature larger than you."
+      },
+      {
+        "name": "Nimble Escape",
+        "description": "Can take the Disengage or Hide action as a bonus action on each turn."
+      }
+    ],
+    "key": "goblin"
+  },
+  "Orc": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "See in dim light within 60 feet as bright light, and in darkness as dim light."
+      },
+      {
+        "name": "Aggressive",
+        "description": "As a bonus action, move up to your speed toward an enemy you can see."
+      },
+      {
+        "name": "Powerful Build",
+        "description": "Count as one size larger for carrying capacity and push/pull/drag."
+      },
+      {
+        "name": "Menacing",
+        "description": "Proficiency in Intimidation skill."
+      }
+    ],
+    "key": "orc"
+  },
+  "Bugbear": {
+    "abilities": [
+      {
+        "name": "Darkvision",
+        "description": "See in dim light within 60 feet as bright light, and in darkness as dim light."
+      },
+      {
+        "name": "Brute",
+        "description": "Your melee weapon attacks deal one extra damage die."
+      },
+      {
+        "name": "Surprise Attack",
+        "description": "If you surprise a creature and hit it on the first turn, your attacks deal extra damage."
+      },
+      {
+        "name": "Long-Limbed",
+        "description": "When you make a melee attack on your turn, your reach is 5 feet greater than normal."
+      }
+    ],
+    "key": "bugbear"
   }
 }
