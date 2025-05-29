@@ -10,6 +10,7 @@ import {
     getWeaponAttackBonus,
     getArmorClass,
     getClassBasedProficiencies,
+    calculateSpellAttack,
     calculateSpellSaveDC,
     calculateTotalHP
 } from '../../utils/characterUtils';
@@ -151,34 +152,39 @@ const CharacterDetail = () => {
 
             <div className="section">
                 <p>Species: {character.race} </p>
-                {speciesFeatures.length > 0 && (
-                    <>
-                        <h3>Species Features</h3>
-                        <ul>
-                            {speciesFeatures.map((feature) => (
-                                <li key={feature._id || feature.name}>
-                                    <strong>{feature.name}:</strong> {feature.description}
-                                </li>
-                            ))}
-                        </ul>
-                    </>
-                )}
             </div>
-
-
+            <div className="section">
+                <h2>Backstory</h2>
+                <p>{character.backstory || <em>No backstory provided</em>}</p>
+            </div>
             <div className="section">
                 <h2>Level</h2>
                 <p><strong>Total Level:</strong> {totalLevel}</p>
             </div>
-
+            <div className="section">
+                <ExpandableSection title="Species Features">
+                    {speciesFeatures.length > 0 && (
+                        <>
+                            <ul>
+                                {speciesFeatures.map((feature) => (
+                                    <li key={feature._id || feature.name}>
+                                        <strong>{feature.name}:</strong> {feature.description}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </ExpandableSection>
+            </div>
             <div className="section">
                 <ExpandableSection title="Class Features">
-                    <ul>
+                    <div className="feature-list">
                         {character.classes.map((cls, i) => (
-                            <li key={i}>
+                            <div className="feature-card" key={i}>
                                 <strong>{cls.name}</strong> (Level {cls.level})
+
                                 {classFeaturesByClass[cls.name] && (
-                                    <div style={{ marginLeft: '1rem' }}>
+                                    <div style={{ marginTop: '0.5rem' }}>
                                         {classFeaturesByClass[cls.name].unlocked.length > 0 && (
                                             <>
                                                 <strong>Unlocked Features:</strong>
@@ -192,8 +198,7 @@ const CharacterDetail = () => {
                                             </>
                                         )}
                                         {classFeaturesByClass[cls.name].upcoming.length > 0 && (
-                                            <>
-                                                <strong>Upcoming Features:</strong>
+                                            <ExpandableSection title="Upcoming Features">
                                                 <ul>
                                                     {classFeaturesByClass[cls.name].upcoming.map(f => (
                                                         <li key={`${f.name}-${f.level}`}>
@@ -201,13 +206,13 @@ const CharacterDetail = () => {
                                                         </li>
                                                     ))}
                                                 </ul>
-                                            </>
+                                            </ExpandableSection>
                                         )}
                                     </div>
                                 )}
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </ExpandableSection>
             </div>
 
@@ -237,9 +242,9 @@ const CharacterDetail = () => {
 
             <div className="section">
                 <ExpandableSection title="Spells">
-                    <h3>Spells</h3>
                     {character.spells?.length ? (
                         <>
+                            <p><strong>Spell Attack:</strong> {calculateSpellAttack(character, totalLevel)}</p>
                             <p><strong>Spell Save DC:</strong> {calculateSpellSaveDC(character, totalLevel)}</p>
                             <div className="spell-grid">
                                 {character.spells.map((spell, idx) => {
@@ -260,7 +265,6 @@ const CharacterDetail = () => {
 
             <div className="section">
                 <ExpandableSection title="Stats">
-                    <h2>Stats</h2>
                     <div className="stat-block">
                         {Object.entries(character.stats).map(([stat, value]) => {
                             const mod = getModifier(value);
@@ -354,21 +358,18 @@ const CharacterDetail = () => {
             {character.background && (
                 <div className="section">
                     <ExpandableSection title="Background">
-                    {backgroundFeatures.length > 0 && (
-                        <>
-                            <p><strong>{character.background}</strong></p>
-                            <ul>
-                                {backgroundFeatures.map((feature, index) => (
-                                    <li key={feature._id || feature.name || index}>
-                                        <strong>{feature.name}:</strong> {feature.description}
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
-
-                    <h2>Backstory</h2>
-                    <p>{character.backstory || <em>No backstory provided</em>}</p>
+                        {backgroundFeatures.length > 0 && (
+                            <>
+                                <p><strong>{character.background}</strong></p>
+                                <ul>
+                                    {backgroundFeatures.map((feature, index) => (
+                                        <li key={feature._id || feature.name || index}>
+                                            <strong>{feature.name}:</strong> {feature.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
                     </ExpandableSection>
                 </div>
             )}

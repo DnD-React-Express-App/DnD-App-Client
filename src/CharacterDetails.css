@@ -141,3 +141,37 @@ li {
   background-color: #822e2e;
   color: #fceaea;
 }
+
+.feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.feature-card {
+  flex: 1 1 300px;
+  background: linear-gradient(145deg, #1a151f, #100c14);
+  border: 1px solid #3e2f4e;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(128, 0, 128, 0.2);
+  padding: 1rem 1.25rem;
+  color: #f5f0e6;
+  font-family: 'Cinzel', serif;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 18px rgba(180, 100, 255, 0.3);
+}
+
+.feature-card strong {
+  color: #d9caff;
+}
+
+.feature-card ul {
+  margin: 0.5rem 0 0 1rem;
+  padding-left: 1rem;
+}

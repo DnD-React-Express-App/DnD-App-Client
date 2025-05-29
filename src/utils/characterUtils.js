@@ -246,7 +246,23 @@ export const classProficiencies = {
     return 8 + statMod + prof;
   };
 
+  export const calculateSpellAttack = (character, totalLevel) => {
+    const spellcastingClasses = [
+      'Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard',
+      'Paladin', 'Ranger', 'Warlock'
+    ];
   
+    const casterClass = character.classes.find(cls =>
+      spellcastingClasses.includes(cls.name)
+    );
+    if (!casterClass) return null;
+  
+    const castingStat = getSpellcastingAbility(casterClass.name);
+    const statMod = Math.floor((character.stats[castingStat] - 10) / 2);
+    const prof = getProficiencyBonus(totalLevel);
+  
+    return statMod + prof;
+  }
 
   export const hitDieByClass = {
     Barbarian: 12,
