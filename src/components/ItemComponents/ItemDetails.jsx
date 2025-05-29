@@ -1,8 +1,8 @@
 function ItemDetails({ item }) {
   const renderWeaponDamage = () => {
-    if (!item.damage || !Array.isArray(item.damage)) return null;
+    if (!item.damageTypes || !Array.isArray(item.damageTypes)) return null;
 
-    const damageString = item.damage
+    const damageString = item.damageTypes
       .filter(d => d.dieAmount && d.dieType && d.damageType)
       .map(d => `${d.dieAmount}${d.dieType} ${d.damageType}`)
       .join(' + ');
