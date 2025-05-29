@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpellCard from "./SpellCard";
-import '../../List.css'
+import '../../List.css';
 
 const SpellList = () => {
   const [spells, setSpells] = useState([]);
@@ -9,6 +9,7 @@ const SpellList = () => {
     level: "All",
     school: "All",
     className: "All",
+    searchTerm: "", 
   });
 
   useEffect(() => {
@@ -50,11 +51,19 @@ const SpellList = () => {
     const newFilters = { ...filters, [name]: value };
     setFilters(newFilters);
 
-    const newFiltered = spells.filter((spell) => {
-      const matchesLevel = newFilters.level === "All" || spell.level === parseInt(newFilters.level);
-      const matchesSchool = newFilters.school === "All" || spell.school === newFilters.school;
-      const matchesClass = newFilters.className === "All" || spell.classes.includes(newFilters.className);
-      return matchesLevel && matchesSchool && matchesClass;
+    applyFilters(spells, newFilters);
+  };
+
+  const applyFilters = (allSpells, filterState) => {
+    const { level, school, className, searchTerm } = filterState;
+
+    const newFiltered = allSpells.filter((spell) => {
+      const matchesLevel = level === "All" || spell.level === parseInt(level);
+      const matchesSchool = school === "All" || spell.school === school;
+      const matchesClass = className === "All" || spell.classes.includes(className);
+      const matchesSearch = spell.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesLevel && matchesSchool && matchesClass && matchesSearch;
     });
 
     setFilteredSpells(newFiltered);
@@ -63,6 +72,17 @@ const SpellList = () => {
   return (
     <div>
       <div className="filters">
+        <label>
+          Search:
+          <input
+            type="text"
+            name="searchTerm"
+            value={filters.searchTerm}
+            onChange={handleFilterChange}
+            placeholder="Search by name..."
+          />
+        </label>
+
         <label>
           Class:
           <select name="className" value={filters.className} onChange={handleFilterChange}>
