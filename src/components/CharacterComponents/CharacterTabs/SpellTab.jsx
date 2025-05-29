@@ -10,6 +10,7 @@ function SpellTab({
   selectedSpells = {},
   handleSpellToggle,
 }) {
+
   return (
     <>
       <h3>Spell Selection</h3>

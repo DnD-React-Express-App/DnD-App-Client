@@ -392,19 +392,6 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
                     />
                 )}
 
-                {currentTab === 'Spells' && (
-                    <SpellTab
-                        classes={form.classes}
-                        spellcastingClasses={spellcastingClasses}
-                        classSpellLists={classSpellLists}
-                        fullCasters={fullCasters}
-                        halfCasters={halfCasters}
-                        getMaxSpellLevel={getMaxSpellLevel}
-                        selectedSpells={selectedSpells}
-                        handleSpellToggle={handleSpellToggle}
-                    />
-                )}
-
                 {currentTab === 'Species' && (
                     <>
                         <label>Character Image:</label>
