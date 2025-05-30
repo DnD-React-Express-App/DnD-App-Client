@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import ArmorFormFields from './ArmourFormFields';
 import WeaponFormFields from './WeaponFormFields';
+import { useContext } from 'react';
+import { ItemContext } from '../../context/item.context';
 
 function ItemForm({ initialData = {}, onSubmit }) {
+    const { addItem } = useContext(ItemContext);
     const blankItem = {
         name: '',
         description: '',
@@ -57,29 +60,36 @@ function ItemForm({ initialData = {}, onSubmit }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
+      
         let dataToSubmit = {
-            ...formData,
-            weight: formData.weight ? Number(formData.weight) : undefined,
+          ...formData,
+          weight: formData.weight ? Number(formData.weight) : undefined,
         };
-
+      
         if (formData.type === 'Weapon' && formData.damageTypes?.length) {
-            dataToSubmit = {
-                ...dataToSubmit,
-                damageTypes: formData.damageTypes.map(d => ({
-                    type: d.damageType,
-                    die: `${d.dieAmount}${d.dieType}`
-                }))
-            };
+          dataToSubmit = {
+            ...dataToSubmit,
+            damageTypes: formData.damageTypes.map(d => ({
+              type: d.damageType,
+              die: `${d.dieAmount}${d.dieType}`,
+            })),
+          };
         }
+      
+        try {
+          await onSubmit(dataToSubmit);
+          toast.success('Item created!');
+        } catch (err) {
+          console.error('Save failed:', err);
+          const msg = err.response?.data?.message || err.message || 'Item save failed.';
+          setErrorMessage(msg);
+          toast.error(msg);
+        }
+      };
+      
 
-        onSubmit(dataToSubmit).catch((err) => {
-            const msg = err.response?.data?.error || 'Item save failed.';
-            setErrorMessage(msg);
-        });
-    };
 
     return (
         <form onSubmit={handleSubmit}>

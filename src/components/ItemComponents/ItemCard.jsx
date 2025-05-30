@@ -23,9 +23,11 @@ function ItemCard({ item }) {
       className="card cursor-pointer hover:shadow-lg transition-shadow"
       onClick={toggleExpand}
     >
+    <Link to={`/items/${item._id}`}>
       <h3 className="text-lg font-bold">
           {item.name}
       </h3>
+    </Link>
 
       {/* Collapsed View */}
       {item.type === 'Weapon' && renderDamage()}

@@ -28,6 +28,8 @@ import EditSpell from './pages/SpellPages/EditSpell';
 import Profile from './pages/ProfilePages/Profile';
 import EditProfile from './pages/ProfilePages/EditProfile';
 
+import { Toaster } from 'react-hot-toast';
+
 
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
     <div className="App">
       <Navbar />
       <main className="MainContent">
+        <Toaster position="top-right" reverseOrder={false} />
         <Routes>
           <Route path="/" element={<Home />} />
 

@@ -7,6 +7,7 @@ import {
     saveSharedCharacter,
     getCharacters
 } from '../../services/character.service';
+import { toast } from 'react-hot-toast';
 
 function SharedCharacters() {
     const { isLoading, isLoggedIn, user } = useContext(AuthContext);
@@ -42,11 +43,11 @@ function SharedCharacters() {
       const handleSave = async (id) => {
         try {
           await saveSharedCharacter(id);
-          alert('Character saved to your list!');
+          toast.success('Character saved to your list!');
           setSavedCharacterIds(prev => new Set(prev).add(id)); 
         } catch (err) {
           console.error(err);
-          alert(err.response?.data?.message || 'Error saving character.');
+          toast.error(err.response?.data?.message || 'Error saving character.');
         }
       };
       

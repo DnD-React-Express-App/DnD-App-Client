@@ -16,6 +16,7 @@ import {
     getMaxSpellLevel,
     getClassBasedProficiencies
 } from '../../utils/characterUtils';
+import { toast } from 'react-hot-toast';
 
 
 const raceOptions = [
@@ -310,9 +311,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             }));
         } catch (err) {
             console.error('Upload failed', err);
-            alert('Image upload failed.');
+            toast.error('Image upload failed.');
         } finally {
             setUploading(false);
+            toast.success('Image uploaded!')
         }
     };
 
@@ -347,10 +349,10 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             console.log('Submitting payload:', payload);
             const res = form._id ? await updateCharacter(form._id, payload) : await createCharacter(payload);
             if (onSuccess) onSuccess(res.data);
-            alert(`Character ${form._id ? 'updated' : 'created'}!`);
+            toast.success(`Character ${form._id ? 'updated' : 'created'}!`);
         } catch (err) {
             console.error(err);
-            alert(`Error ${form._id ? 'updating' : 'creating'} character`);
+            toast.error(`Error ${form._id ? 'updating' : 'creating'} character`);
         }
     };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteCharacter, toggleSharedCharacter } from '../../services/character.service';
 import '../../List.css';
+import { toast } from 'react-hot-toast';
 
 const CharacterCard = ({ character, onShare, onDelete, onSave, currentUserId, savedCharacterIds }) => {
   const navigate = useNavigate();
@@ -16,9 +17,10 @@ const CharacterCard = ({ character, onShare, onDelete, onSave, currentUserId, sa
       try {
         await deleteCharacter(character._id);
         if (onDelete) onDelete(character._id);
+        toast.success('Deleted character!')
       } catch (err) {
         console.error('Error deleting character:', err);
-        alert('Failed to delete character.');
+        toast.error('Failed to delete character.');
       }
     }
   };
@@ -29,12 +31,12 @@ const CharacterCard = ({ character, onShare, onDelete, onSave, currentUserId, sa
 
     try {
       const updated = await toggleSharedCharacter(character._id, newSharedStatus);
-      alert(updated.data.shared ? 'Character shared!' : 'Character unshared.');
+      toast.success(updated.data.shared ? 'Character shared!' : 'Character unshared.');
 
-      if (onShare) onShare(updated.data); // 💡 pass updated character up
+      if (onShare) onShare(updated.data);
     } catch (err) {
       console.error(err);
-      alert('Failed to update share status.');
+      toast.error('Failed to share character.');
     }
   };
 
