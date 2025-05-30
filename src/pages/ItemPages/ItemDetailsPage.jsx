@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { getItemById, deleteItem } from '../../services/item.service';
 import ItemDetails from '../../components/ItemComponents/ItemDetails';
+import { toast } from 'react-hot-toast';
 
 function ItemDetailsPage() {
     const { id } = useParams();
@@ -23,10 +24,13 @@ function ItemDetailsPage() {
         if (!confirmed) return;
 
         deleteItem(item._id)
-            .then(() => navigate('/items'))
+            .then(() => {
+                navigate('/items')
+                toast.success('Deleted Item')
+            })
             .catch((err) => {
                 console.error('Failed to delete item:', err);
-                alert('Failed to delete item. Please try again.');
+                toast.error('Failed to delete item. Please try again.');
             });
     };
 

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import ArmorFormFields from './ArmourFormFields';
 import WeaponFormFields from './WeaponFormFields';
 import { useContext } from 'react';
-import { ItemContext } from '../../context/item.context';
+import { addItem, updateItem, ItemContext } from '../../context/item.context';
+import { toast } from 'react-hot-toast';
 
 function ItemForm({ initialData = {}, onSubmit }) {
     const { addItem } = useContext(ItemContext);
@@ -78,17 +79,24 @@ function ItemForm({ initialData = {}, onSubmit }) {
           };
         }
       
+        const isUpdating = !!initialData?._id;
+      
         try {
-          await onSubmit(dataToSubmit);
-          toast.success('Item created!');
+          if (isUpdating) {
+            await updateItem(initialData._id, dataToSubmit);
+          } else {
+            await addItem(dataToSubmit);
+          }
+      
+          await reloadItems(); 
+          toast.success(isUpdating ? 'Item updated!' : 'Item created!');
         } catch (err) {
           console.error('Save failed:', err);
           const msg = err.response?.data?.message || err.message || 'Item save failed.';
           setErrorMessage(msg);
           toast.error(msg);
         }
-      };
-      
+      };      
 
 
     return (

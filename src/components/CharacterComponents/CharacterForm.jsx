@@ -19,6 +19,7 @@ import {
 import { toast } from 'react-hot-toast';
 
 
+
 const raceOptions = [
     'Human',
     'Elf',
@@ -57,7 +58,7 @@ const fullCasters = ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard', 'Warlock']
 const halfCasters = ['Paladin', 'Ranger'];
 
 const CharacterForm = ({ onSuccess, initialData = {} }) => {
-    const { items } = useContext(ItemContext);
+    const { items, reloadItems } = useContext(ItemContext);
 
     const [uploading, setUploading] = useState(false);
     const [currentTab, setCurrentTab] = useState('Basics');
@@ -94,6 +95,11 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
     });
 
     useEffect(() => {
+        reloadItems();
+      }, []);
+      
+
+    useEffect(() => {
         if (initialData && initialData._id) {
             setForm(prev => ({
                 ...prev,
@@ -125,7 +131,7 @@ const CharacterForm = ({ onSuccess, initialData = {} }) => {
             setArmorOptions(items.filter(item => item.type === 'Armor'));
             setWeaponOptions(items.filter(item => item.type === 'Weapon'));
         }
-    }, [items]);
+    }, [items.length]);
 
     useEffect(() => {
         console.log(initialData.items);

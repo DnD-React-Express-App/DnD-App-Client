@@ -41,6 +41,7 @@ export function ItemProviderWrapper({ children }) {
     await deleteItem(id);
     setItems(prev => prev.filter(item => item._id !== id));
   };
+  
 
   return (
     <ItemContext.Provider value={{
