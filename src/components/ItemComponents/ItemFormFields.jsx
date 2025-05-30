@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import ArmorFormFields from './ArmourFormFields';
 import WeaponFormFields from './WeaponFormFields';
 import { useContext } from 'react';
-import { addItem, updateItem, ItemContext } from '../../context/item.context';
+import { ItemContext } from '../../context/item.context';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
 
 function ItemForm({ initialData = {}, onSubmit }) {
-    const { addItem } = useContext(ItemContext);
+    const { addItem, updateItem, reloadItems } = useContext(ItemContext);
+    const navigate = useNavigate();
     const blankItem = {
         name: '',
         description: '',
@@ -90,13 +93,16 @@ function ItemForm({ initialData = {}, onSubmit }) {
       
           await reloadItems(); 
           toast.success(isUpdating ? 'Item updated!' : 'Item created!');
+          
+          navigate('/items'); 
         } catch (err) {
           console.error('Save failed:', err);
-          const msg = err.response?.data?.message || err.message || 'Item save failed.';
+          const msg = err?.response?.data?.message || err?.message || 'Item save failed.';
           setErrorMessage(msg);
           toast.error(msg);
         }
-      };      
+      };
+       
 
 
     return (
